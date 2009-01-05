@@ -1,0 +1,10 @@
+(module make-server mzscheme
+  
+  (require (file "server-util.ss"))
+  
+  (begin (make-data-directories)
+         (copy-configuration-files)
+         (make-groups)
+         (update-permissions))
+  
+  )
