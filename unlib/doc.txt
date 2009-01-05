@@ -1,0 +1,1519 @@
+_Unlib_ : A Utility Library by Untyped
+======================================
+
+By  Dave Gurnell (djg at untyped dot com)
+and Noel Welsh   (noel at untyped dot com)
+
+This manual documents Unlib version 2.0
+Time-stamp: <2007-08-29 17:11:29 us>
+
+Keywords: _unlib_
+
+
+Introduction
+============
+
+Unlib is a library of utility functions that have arisen
+from work within Untyped (www.untyped.com).  It is available
+under the LGPL (same licence as PLT Scheme).  In addition to
+releases via PLaneT the source may be checked out of
+Subversion.  The Subversion URL is:
+
+  http://svn.untyped.com/unlib/
+
+
+
+Unlib API
+=========
+
+base.ss
+-------
+
+> exn:unlib
+
+Basic exception thrown when Unlib encounters an error
+
+> exn:fail:unlib
+
+Basic exception thrown when Unlib encounters an
+unrecoverable error
+
+
+contract.ss
+-----------
+
+> symbol-or-false?
+> string-or-false?
+> number-or-false?
+> integer-or-false?
+ : any -> boolean
+
+These functions are useful in constructing contracts. They all return #t
+if the input value matches those given in their name, and return #f
+otherwise.
+
+E.g.
+
+  (string-or-false "foo") -> #t
+  (string-or-false 2) -> #f
+
+
+> arity/c :: (arity/c number)
+arity/c : natural-number -> (any -> boolean)
+
+arity/c creates a contract that checks for a procedure that accepts the 
+given number of arguments.  The number of arguments is checked using
+procedure-arity-includes?
+
+
+
+date.ss
+-------
+
+> time-tai?
+time-tai? : any -> boolean
+
+True if the value is a SRFI-19 time-tai value
+
+
+> time-utc?
+time-utc? : any -> boolean
+
+True if the value is a SRFi-19 time-utc value
+
+
+> time-duration?
+time-duration? : any -> boolean
+
+True if the value is a SRFI-19 time-duration value
+
+
+> (leap-year? year)
+leap-year? : number -> (U #t #f)
+
+True if the number represents a leap year, false otherwise
+
+Example
+
+  (leap-year? 2000) -> #t
+
+
+> (days-in-month month [year])
+days-in-month : number [number] -> number
+
+Returns the number of days in the given month and year.  The
+year defaults to 2001 (a non-leap year) if not specified.  Raises
+exn:fail:unlib if the month is not in the range 1-12.
+
+Example
+
+  (days-in-month 2 2000) -> 29
+
+
+> date-valid?
+date-valid? : srfi-19-date -> boolean
+
+True if the given SRFI-19 date is a valid date (i.e. the day, month,
+year, and so forth are in the valid ranges), and false otherwise.
+
+
+> time-weekday?
+time-weekday? : (U time-tai time-utc) -> boolean
+
+True if the given time represents a weekday date (that is, Monday to
+Friday), and false otherwise.
+
+
+> time->date
+time->date : (U time-tai time-utc) -> date
+
+Converts the given time to a date.
+
+
+> timestamp->ago-string :: (timestamp->ago-string then [now])
+timestamp->ago-string : integer [integer] -> string
+
+Takes a seconds timestamp (and, optionally, the current timestamp) and
+ returns a string like:
+  
+  n second(s) ago
+  n minute(s) ago
+  n hour(s) ago
+  n day(s) ago
+
+Raises exn:fail:unlib if now is before then.
+
+
+> time->ago-string : (time-tai->ago-string then [now]
+time->ago-string : (U time-tai time-utc) [(U time-tai time-utc)] -> string
+
+As timestamp->ago-string above, but works with SRFI-19 times.
+
+
+> current-time-zone-offset 
+current-time-zone-offset : -> integer
+
+Returns the current time-zone offset in seconds.
+
+
+> current-year
+current-year : -> integer
+
+Returns the current year.
+
+
+
+debug.ss
+--------
+
+> debug-log
+debug-log : log
+
+The log (see log.ss) used by the debug functions.
+
+
+> debug-enabled?
+parameter debug-enabled? : boolean
+
+Parameter that turns debugging logging on and off.
+
+
+> (debug message value)
+debug : string 'a -> 'a
+
+Prints a debug message consisting of message and value, and
+returns value.  You can wrap it around an expression to
+debug it without affecting the semantics of the code.
+
+Example
+
+   (debug "Message" (+ 1 2 3))
+
+
+> (let-debug ((var val) ...) expr ...)
+Syntax
+
+Evaluates as a let, printing the values of var
+
+Example
+
+  (let-debug ([a 1]
+              [b 2])
+    (+ a b))
+
+
+> (let*-debug ((var val) ...) expr ...)
+Syntax
+
+Evaluates as a let*, printing the values of var
+
+Example
+
+  (let*-debug ([a 1]
+               [b (+ a 1)])
+    (+ a b))
+
+
+> (letrec-debug ((var val) ...) expr ...)
+Syntax
+
+Evaluates as a letrec, printing the values of var
+
+Example
+
+  (letrec-debug ([odd?
+                  (lambda (n)
+                    (if (zero? n)
+                        #t
+                        (even? (sub1 n))))]
+                 [even?
+                  (lambda (n)
+                    (if (zero? n)
+                        #f
+                        (odd? (sub1 n))))])
+    (odd? 7))
+
+
+> (define-debug var val)
+Syntax
+
+Evaluates as a define, printing the value of var
+
+Example
+
+  (define-debug a 2)
+
+
+
+exn.ss
+------
+
+> raise-exn :: (raise-exn exn message arg1 arg2 ...)
+Syntax
+
+Raises the given exception with the given message.  Handles
+the conversion of message to an immutable string and
+capturing continuation marks. Arguments after the message
+are passed to the constructor of the exception.
+
+Example:
+
+  (raise-exn exn:unlib "Something wicked this way comes")
+
+
+> reraise-exn :: (reraise-exn old-exn new-exn new-message other ...)
+syntax reraise-exn : exn exn string message 'a ...
+
+Raises new-exn with new-message appended to old exn's message (with a 
+seperating ": ") and old-exn's continuation marks.  The additional
+arguments, if any, are passed to the constructor of new-exn.
+
+Example
+
+  (with-handlers
+    [(exn:fail?
+     (lambda (e) (reraise-exn e exn:fail:unlib "This went wrong"))]
+    ...)
+
+
+> display-exn
+display-exn : exn -> void
+
+Displays the exn in a human readable form to the current output port.
+
+
+> raise-exn/append :: (raise-exn/append exn message messages ...)
+Syntax
+
+DEPRECATED : Use raise-exn instead - it allows the passing of extra
+arguments to the exception constructor.
+
+As raise-exn excepts appends together the messages
+
+
+> raise-exn/format :: (raise-exn/format exn template params ...)
+Syntax
+
+DEPRECATED : Use raise-exn instead - it allows the passing of extra
+arguments to the exception constructor.
+
+As raise-exn, except template is a format string, and params
+the parameters to format.
+
+Example: (DEPRECATED)
+
+  (raise-exn/format exn:fail:unlib
+    "This is an exception. ~a Test number ~a."
+    "Oh yes it is."
+    69)
+
+
+
+file.ss
+-------
+
+> (make-directory-tree tree)
+make-directory-tree : (tree = (U (list-of tree) string)) -> void
+
+Creates a directory tree in the current directory that
+matches tree.  Existing directories are ignored.
+
+Example
+
+  (make-directory-tree '("a" ("b" "c" ("d"))))
+
+  Creates the directory tree:
+    a / b
+      / c / d
+    
+
+> (make-non-conflicting-filename path filename)
+make-non-conflicting-filename : path string -> string
+
+Returns a string representing a filename that is guaranteed
+to name a file that does currently not exist in path.  If
+filename doesn't exist in path, filename is returned,
+otherwise digits are appended to the stem of filename till a
+unique name is generated.
+
+Example
+
+   my-file.txt becomes:
+  
+    my-file.txt if my-file.txt doesn't exist in path
+    my-file1.txt if my-file.txt exists in path
+    my-file2.txt if my-file.txt and my-file1.txt exists in path
+
+
+> (make-non-conflicting-path path filename)
+make-non-conflicting-path : path string -> path
+
+As make-non-conflicting-filename but returns
+
+  (build-path path (make-non-conflicting-filename path filename))
+
+
+> read-file->string
+read-file->string : (U path string) -> string
+
+Reads the contents of the file to a string.  See the port.plt collection
+on PLaneT for more advanced functions along these lines.
+
+
+> concatenate-files :: (concatenate-files dest src)
+concactenate-files : (U string path) (list-of (U string path)) -> void
+
+Concatenates (appends) the contents of all the files named in src to the
+file named in dest.
+
+
+
+generator.ss
+------------
+
+There is no doubt that lists are useful structures for representing
+many kinds of data, and that folds and maps are a quick, convenient
+way of performing arbitrary bits of list manipulation.
+
+The main problem with the list/fold/map approach is the number of
+temporary lists generated in the process, which can take up a large
+amount of memory.
+
+Generators are a half-way-house between lists and streams that aim
+to reduce memory overhead when large data sources are involved.
+
+A generator is a stream-like accessor that can be repeatedly called
+to return new values from its source. A special "generator-end" value
+is returned to indicate that the source has been exhausted.
+
+For convenience we write a generator of a type "a" as follows:
+
+    (gen-> a) === (-> (U a generator-end))
+
+This library provides convenient ways of:
+
+  - producing generators from lists
+  - combining generators to form other generators 
+    (c.f. fold, map and so on)
+  - accumulating results from generators
+    (e.g. back into lists)
+
+
+> generator-end 
+generator-end : symbol
+
+A unique symbol that indicates a generator has finished producing values
+
+
+> gen-> :: (gen-> value-contract)
+syntax gen->
+
+Syntax that expands into a contract for a generator that produces 
+value-contract or generator-end
+
+
+> generator-end? 
+generator-end? : any -> boolean
+
+True if the value is the generator-end symbol
+
+
+> generator-map :: (generator-map fn gen0 gen1 ...)
+generator-map : ('a 'b ... -> 'c) (gen-> 'a) (gen-> 'b) ... -> (gen-> 'c)
+
+The generator equivalent of map.  Creates a new generator that returns 
+fn applied to the values from gen0 etc.  The created generator ends as 
+as soon as any of the source generators end.
+
+
+> generator-fold :: (generator-fold fn seed gen0 gen1 ...)
+generator-fold : ('a 'b ... 'k -> 'k) 'k (gen-> 'a) (gen-> 'b) ... 
+              -> (gen-> 'k)
+
+The generator equivalent of fold.  The returned generator returns the
+values of seed for each application of fn, stopping when any of the 
+source generators stop.
+
+
+> generator-filter :: (generator-filter pred src)
+generator-filter : ('a -> boolean) (gen-> 'a) -> (gen-> 'a)
+
+Given a predicate and a source generator, creates a generator that
+generates the values for which the predicate is not #f.
+
+
+> generator-filter-map :: (generator-filter-map fn src)
+generator-filter-map : ('a -> (U 'b #f)) (gen-> 'a) -> (gen-> 'b)
+
+Creates a generates that generates the non-#f values of fn applied to 
+the values generates by src.
+
+
+> generator-remove-duplicates 
+generator-remove-duplicates : (gen-> 'a) [('a 'a -> boolean)] -> (gen-> 'a)
+
+Creates a generator that filters out values that occur more than once 
+in succession.  For example, if the source generator generates the 
+values
+
+  1 2 2 3 2 2 4 4 4 generator-end
+
+the values with duplicates removed will be
+
+  1 2 3 2 4 generator-end
+
+The optional second argument is a function to use for equality testing.
+It defaults to equal?
+
+
+> generator-debug
+generator-debug : string (gen-> 'a) -> (gen-> 'a)
+
+Creates a generator equivalent to the source, except values are 
+displayed on the current output port as they are generated.
+
+
+> generator-for-each :: (generator-for-each fn gen0 gen1 ...)
+generator-for-each : ('a 'b ... -> void) (gen-> 'a) (gen-> 'b) ... -> void
+
+Applies fn for side-effect to the values generated by gen0 gen1 ...
+Processing stops when the first source generator stops
+
+
+> generator-accumulate :: (generator-accumulate fn seed gen0 gen1 ...)
+generator-accumulate : ('a 'b ... 'k -> 'k) 'k (gen-> 'a) (gen-> 'b) ... 
+                    -> 'k
+
+Like generator-fold but only the final application of fn is returned.
+
+
+> list->generator
+list->generator : (listof 'a) -> (gen-> 'a)
+
+Creates a generator that generates the value in the given list.
+
+
+> generator->list
+generator->list : (gen-> 'a) -> (listof 'a)
+
+A convenience form of generator-accumulate that collects the generated
+values into a list
+
+
+
+gen.ss
+------
+
+Provides abbreviated names for the generator library above.  Exported
+names are:
+
+  generator.ss                 gen.ss
+  ------------------------------------------------
+   list->generator             list->generator
+
+   generator-end               g:end
+   generator-end?              g:end?
+
+   generator-map               g:map               
+   generator-fold              g:fold              
+   generator-filter            g:filter            
+   generator-filter-map        g:filter-map        
+   generator-remove-duplicates g:remove-duplicates 
+   generator-debug             g:debug             
+   generator-for-each          g:for-each          
+   generator->list             g:collect           
+
+
+
+hash-table.ss
+-------------
+
+> (make-hash-table/pairs . pairs)
+make-hash-table/pairs : (cons 'a 'b) ... -> (hash-of 'a 'b)
+
+Makes a hash table from the given pairs
+
+Example
+
+  (make-hash-table/pairs
+   '(a . 1)
+   '(b . 2)
+   '(c . 3))
+
+
+> (hash-table-mapped? table key)
+hash-table-mapped? : (hash-of 'a 'b) 'a -> (U #t #f)
+
+Returns true is the given hash table contains a mapping for
+key.
+
+
+> (hash-table-get/default table key default)
+hash-table-get/default : (hash-of 'a 'b) "a 'b -> 'b
+
+Gets the value that the hash table maps to the given key, or
+default if there is no mapping
+
+
+> (hash-table-accessor table)
+hash-table-accessor : (hash-of 'a 'b) -> ('a -> 'b)
+
+Given a hash table, makes a function that takes a key and
+returns the values mapped to that key, or exn:fail:unlib if
+there is no mapping
+
+
+> (hash-table-accessor/default table default)
+hash-table-accessor/default : (hash-of 'a 'b) 'b -> ('a -> 'b)
+
+Given a hash table, makes a function that takes a key and
+returns the values mapped to that key, or default if there
+is no mapping
+
+
+> (hash-table-put/append! table key value)
+hash-table-put/append! : (hash-of 'a (list-of 'b)) 'a 'b -> void
+
+Appends value to the value mapped to key in table, creating
+a list of one element if there is no mapping.  If the mapped
+value is not a list exn:fail:unlib is raised.
+
+
+> (hash-table-mutator table)
+hash-table-mutator : (hash-of 'a 'b) -> ('a 'b -> void)
+
+Given a hash table, creates a procedure that maps the key to
+the value.
+
+
+> (hash-table-mutator/append table)
+hash-table-mutator/append : (hash-of 'a 'b) -> ('a 'b ->
+void)
+
+Given a hash table, creates a procedure that appends the
+value to the values mapped to key, as given by
+hash-table-put/append!
+
+
+> (hash-table-find table selector [default])
+hash-table-find : (hash-of 'a 'b) ('a 'b -> (U 'c #f)) [(()
+-> 'd)] -> (U 'c 'd)
+
+Applies selector to every key and value in table, returning
+the first non-#f value returned by selector, or the value of
+default if no non-#f value is returned.  The default value
+of default is #f
+
+
+> (any-keys-have-values? table)
+any-keys-have-values? : (hash-of 'a 'b) -> (U #t #f)
+
+Returns to #t if every value in table is a list, otherwise
+raises exn:fail:unlib
+
+
+> (key-has-values? table key)
+key-has-values? : (hash-of 'a 'b) 'a -> (U #t #f)
+
+Return #t if table maps key to a non-null list.  Raises
+exn:fail:unlib otherwise.
+
+
+> (hash-table->string table [delimiter])
+hash-table->string : (hash-of 'a 'b) [string] -> string
+
+Returns a string representation of table, of the form
+key=value separated by delimiter.  Delimiter defaults to ,
+
+
+
+list.ss
+-------
+
+type (tree-of 'a) = (U 'a (cons tree tree))
+
+type (alist-of 'a 'b) = (list-of (cons 'a 'b))
+
+> mutable-cons :: (mutable-cons head rest)
+mutable-cons : 'a (listof 'a) -> (listof 'a)
+
+Cons head onto rest using a mutable cons cell.  Currently a synonym for
+cons.
+
+
+> (list-swap lst index1 index2)
+list-swap : list natural natural -> list
+
+Non-destructively swaps the elements at index1 and index2.  Raises
+exn:fail:unlib if the indices are out of bounds or the same.
+
+
+> (list-delimit list delimiter)
+list-delimit : (list-of 'a) 'b -> (list-of (U 'a 'b))
+
+Inserts delimiter between each element of list
+
+Example:
+
+  (list-delimit '("a" "b" "c") " ")
+  -> '("a" " " "b" " " "c")
+
+
+> (merge-sorted-lists list1 list2 same? less-than?)
+merge-sorted-lists : (listof 'a) (listof 'a)
+                     ('a 'a -> boolean) ('a 'a -> boolean)
+                  -> (listof 'a)
+
+Merges list1 and list2 in O(n) time assuming list1 and list2 are sorted
+in ascending order as given by less-than?  Duplicates are detected using
+same? and the item from list1 is taken when a duplicate is found.
+
+
+> (char-iota count [start])
+char-iota : number char
+
+Generates count characters starting at start
+
+Example 
+
+  (char-iota 10 #\0)
+  ->(list #\0 #\1 #\2 #\3 #\4 #\5 #\6 #\7 #\8 #\9)
+
+
+> (list-pad list length [item])
+list-pad : (listof 'a) natural ['a] -> (listof 'a)
+
+Adds (via cons) copies of item to the front of list till length is
+reached.  If the list is longer or the same length as that requested it
+is returned.
+
+If no item is specified #f is used.
+
+Example:
+
+  (list-pad (list 'a 'b 'c) 5 'z) -> (list 'z 'z 'a 'b 'c)
+
+
+> (list-pad-right list length [item])
+list-pad-right : (listof 'a) natural ['a] -> (listof 'a)
+
+As list-pad above, except items are added to the end of list
+
+
+> (tree-map fn tree)
+tree-map : ('a -> 'b)  (tree-of 'a) -> (tree-of 'b)
+
+Returns the tree that is the result of applying fn to each
+leaf of tree
+
+
+> (tree-for-each fn tree)
+tree-for-each : ('a -> 'b) (tree-of 'a) -> void
+
+Applies fn to each leaf of tree
+
+
+> (assoc-value key alist)
+assoc-value : 'a (alist-of 'a 'b) -> 'b
+
+Return the value in the alist mapped to key, raising
+exn:fail:unlib if no mapping is found
+
+
+> (assoc-value/default key alist default)
+assoc-value/default : 'a (alist-of 'a 'b) 'b -> 'b
+
+Return the value in the alist mapped to key, of default if
+no mapping is found
+
+
+> (alist-accessor alist)
+Syntax
+
+Expands to a function of a key that calls assoc-value on alist
+
+
+> (alist-accessor/default alist)
+Syntax
+
+Expands to a function of a key that calls assoc-value/default on alist
+
+
+> (alist-set key value alist)
+alist-set : 'a 'b (alist-of 'a 'b) -> (alist-of 'a 'b)
+
+Returns an alist with the value mapped to key replaced with
+value, if one exists, otherwise adding a new mapping from
+key to value at the end of the list.
+
+
+> (alist-mutator alist)
+Syntax
+
+Expands to a function that accepts a key and a value and
+destructively the modifies alist to containing a mapping
+from key to value
+
+Example
+
+  (define alist null)
+  (define mutate! (alist-mutator alist))
+  alist ;; null
+  (mutate! 'a 1)
+  alist :: '((a . 1))
+
+
+> (alist-mutator/append alist)
+Syntax
+
+As alist-mutator, except values are appended to the end of existing
+values
+
+
+> (alist-map fn alist)
+alist-map : ('a -> 'c) (alist-of 'a 'b) -> (alist-of 'a 'c)
+
+Applies fn to every key and value in alist, returning a list
+of the results
+
+
+> (alist-for-each fn alist)
+alist-for-each : ('a -> 'c) (alist-of 'a 'b) -> void
+
+Applies fn to every key and value in alist
+
+
+> (alist-merge alist1 alist2 [preference])
+alist-merge : (alist-of 'a) (alist-of 'a) [(U 'first 'second)]
+           -> (alist-of 'a)
+
+Merges the two alists together.  The value of preference determines which
+alist the value is taken from if the keys collide.  The default is to
+take the value from the first list.
+
+
+> alist-delete
+alist-delete : 'a (alist-of 'a)) -> (alist-of 'a)
+
+The SRFI-1 alist-delete, provided here for convenience
+
+
+
+log.ss
+------
+
+> (define-struct log-stream (name) #f)
+struct log-stream : symbol
+
+A structure representing a particular stream of log messages.
+
+
+> message-log : log-stream
+> warning-log : log-stream
+> error-log   : log-stream
+
+The default log streams for messages, warnings, and logs, respectively.
+
+
+> current-log-preamble
+parameter current-log-preamble :  -> (list-of any)
+
+Parameter that stores a thunk returning a list of values to
+be included at the begining of each log message.
+
+
+> current-log-port
+parameter current-log-port : (U (parameter-of output-port) output-port))
+
+Parameter that stores either a paramter storing an output-port (such as
+current-output-port or current-error-port) or just an output-port.  
+Defaults to current-output-port
+
+
+> (with-log-preamble thunk expr ...)
+Syntax
+
+Evaluates expr ... in a dynamic environment with current-log-preamble
+parameterised to thunk.
+
+
+> (with-log-port port expr ...)
+Syntax
+
+Evaluates expr ... in a dynamic environment with current-log-port
+parameterised to port.
+
+
+> (log-message msg ...)
+log-message : any ... -> integer
+
+Logs msg and returns a timestamp as a unique identifier
+
+
+> (log-warning msg ...)
+log-warning : any ... -> integer
+
+Logs msg as a warning and returns a timestamp as a unique identifier
+
+
+> (log-error msg ...)
+log-error : any ... -> integer
+
+Logs msg as a error and returns a timestamp as a unique identifier
+
+
+> (log-generic msg-type msg)
+log-generic symbol (list-of any) -> integer
+
+Logs msg as type msg-type, returning a timestamp as a unique identifier
+
+
+
+number.ss
+---------
+
+> (number->symbol number)
+number->symbol : number -> symbol
+
+Converts number to a symbol.
+
+
+
+parameter.ss
+------------
+
+> (make-guard predicate message)
+make-guard : ('a -> (U #t #f)) string -> ('a -> 'a)
+
+Make a guard for a paramter.  Given a predicate and a string
+documenting the expected type, returns a function that
+raises exn:fail:unlib if its argument does not match the
+predicate, and otherwise returns the argument
+
+
+> (define-parameter name initial-value guard with-form)
+Syntax
+
+Expands to two definitions. The first binds name to a
+parameter with initial value of initial-value, and guard of
+guard.  The second binds with-form to syntax (with-form
+new-value expr ...) that expands to a parameterisation of
+name with new-value in the dynamic environment of
+expression.
+
+Example
+
+  (define-parameter foo 
+    1 
+    (make-guard (lambda (x) (or (integer? x) (not x)))
+                "(U integer #f)")
+    with-foo)
+
+  Expands to
+
+  (define foo
+    (make-parameter 1 
+      (make-guard (lambda (x) (or (integer? x) (not x)))
+                  "(U integer #f)")))
+
+  (define-syntax (with-foo stx)
+    (syntax-case stx ()
+      [(with-foo new-value exp (... ...))
+       (syntax
+         (parameterize ([foo new-value])
+           exp (... ...)))]))
+
+  And we can use as such:
+
+  (with-foo 10 (foo))
+
+  Evaluates to 10
+
+  (with-foo "bar" 10)
+
+  Raises exn:fail:unlib
+
+
+
+pipeline.ss
+---------
+
+A "pipeline" allows a programmer to wrap a procedure in one
+or more pieces of useful functionality. Pipelines are lists
+of "stages", each of which performs some function and calls
+the next stage. The last stage calls the target procedure.
+
+An example of this (and the original reason for creating
+pipelines) is request processing in a web server. The server
+may consist of a number of controller procedures, each of
+which serves a different page. All of these procedures may
+have one or more bits of functionality in common.  For
+example:
+
+  - set up cookies
+  - identify the user's browser
+  - check the user's security privileges
+
+Note that, while many of these functions will be common
+across many controllers, there will be occasions where one
+controller will need to do things differently from the
+others.
+
+The items above can be implemented as stages in a request
+processing pipeline. A standard pipeline can be offered
+site-wide, and controllers can choose to customise it where
+appropriate by adding, removing or changing stages.
+
+Stages are named so they can be uniquely referred to when
+manipulating pipelines in this way. This has the added
+advantage that single stages can be extracted and run out of
+context with the rest of the pipeline.
+
+More formally, given a target procedure:
+
+     target : any ... -> any
+
+a pipeline is a list of stages:
+
+     pipeline : (list-of stage)
+
+where a stage is a name and a body procedure:
+
+     struct stage : symbol ((any ... -> any) any ... -> any)
+
+The body procedure takes at least one argument: a
+"continuation procedure" that is called to continue the
+pipeline. The arguments passed to the continuation procedure
+are passed on to the next stage in the pipeline. The target
+procedure is considered a "pseudo stage" that is called
+after all other stages.
+
+Any stage can abort the pipeline simply by failing to call
+the continuation procedure.  It is also perfectly reasonable
+for stages to set up parameters, install exception handlers,
+change the arguments to subsequent stages and so on.
+
+
+> (call-with-pipeline pipeline procedure . args)
+call-with-pipeline : pipeline (any ... -> any) any ... -> any
+
+Calls a procedure via a pipeline. The result returned is
+either the result of the procedure or that of the last stage
+invoked.
+
+
+> (make-stage name procedure)
+struct stage : symbol ((any ... -> any) any ... -> any)
+
+Constructs a stage with the given name and body procedure.
+The first argument to the body procedure  is *always* a
+continuation procedure that passes control to the next stage
+in the pipeline.
+
+The definition of stage takes advantage of MzScheme's
+"structures as procedures" functionality such that stages
+can be called directly as if they are procedures. For
+example:
+
+  (define my-stage
+    (make-stage
+     'my-stage
+     (lambda (continue name age)
+       (printf "Hello ~a, " name)
+       (continue age))))
+
+  (my-stage
+   (lambda (age)
+     (printf "you are ~a years old!" age))
+   "Dave" 27))
+
+would print:
+
+     Hello Dave, you are 27 years old!
+
+
+> (stage? val)
+stage? : any -> (U #t #f)
+
+Returns #t if val is stage, #f otherwise.
+
+
+> (stage-name stage)
+stage-name : stage -> symbol
+
+Returns the name of the stage.
+
+
+> (find-stage pipeline name)
+find-stage : (list-of stage) symbol -> (U stage #f)
+
+Returns the appropriately named stage in the specified
+pipeline, or #f if such a stage cannot be found.
+
+
+> (replace-stage pipeline name)
+replace-stage : (list-of stage) stage -> (list-of stage)
+
+Replaces the equivalently named stage in the supplied
+pipeline (if such a stage can be found).
+
+
+> (delete-stage pipeline name)
+delete-stage : (list-of stage) symbol -> (list-of stage)
+
+Deletes the appropriately named stage from the supplied
+pipeline (if such a stage can be found).
+
+
+
+preprocess.ss
+-------------
+
+> (apply-template template bindings)
+apply-template : (U string port) (alist-of symbol any) -> string
+
+Applies template to the given bindings, returning a string
+of the results.  Template is a port or string representing
+an mzpp template (see (lib "mzpp.ss" "preprocessor")).
+
+Examples:
+
+  (define tmpl (open-input-string "<< (+ 1 2) >>"))
+  (apply-template tmpl '()) ;; evaluates to "3\n"
+
+  (define tmpl (open-input-string "<< dummy >>"))
+  (apply-template tmpl '((dummy . 3))) ;; evaluates to "3\n"
+
+Note that the bindings are eval'ed, so they should be
+s-expressions that evaluate to the values you want in the
+template.  Confused?  Here's an example:
+
+Say you want the binding foo to be the value '(1 2 3)
+If you call
+
+  (apply-template tmpl '(foo . (1 2 3)))
+
+you will get an error, as the s-expression '(1 2 3) evals to
+an application of 1 to the arguments 2 3.  As 1 is not a
+function this is an error.  What you want is
+
+  (apply-template tmpl '(foo . (list 1 2 3)))
+
+as the s-expression '(list 1 2 3) evaluates to the list '(1
+2 3)
+
+See the print-convert library in MzLib for a generic way of
+converting values to their eval-able representation.
+
+
+
+profile.ss
+----------
+
+> (profile message fn [arg ...])
+profile: string (any ... -> any1) any ... -> any1
+
+Applys fn to args and returns the result.  Measures the time
+taken to apply fn and logs it (see log.ss above) with a
+message that begins with "Profile" and then the message
+passed to profile.
+
+
+
+string.ss
+---------
+
+> (string-namecase string)
+string-namecase : string -> string
+
+Similar to string-titlecase buts deals with various special
+cases common in European names
+
+
+> (ensure-string string-or-bytes)
+ensure-string : (U string bytes) -> string
+
+If the input is bytes it is converted to a string using the
+UTF-8 conversion.  Useful in servlets where the web server
+may provide bytes or strings depending on the encoding
+
+> (string-delimit strings delimiter [#:prefix prefix] [#:suffix suffix])
+string-delimit : (listof string) string #:prefix string #:suffix string
+              -> string
+              
+Creates a string with delimiter inserted between every element of 
+strings.  Prefix and suffix, if given, are inserted at the beginning 
+and end of the string respectively.
+
+Example:
+
+   (string-delimit (list "a" "b" "c")
+                   ", "
+                   #:prefix "["
+                   #:suffix "]")
+   ->
+   "[a, b, c]"
+
+
+
+symbol.ss
+---------
+
+> (symbol-append symbol ...)
+symbol-append : symbol ... -> symbol
+
+Appends several symbols, creating a new symbol
+
+> (symbol-upcase symbol)
+symbol-upcase : symbol -> symbol
+
+Converts a symbol to uppercase.
+
+> (symbol-downcase symbol)
+symbol-downcase : symbol -> symbol
+
+Converts a symbol to lowercase.
+
+
+syntax.ss
+---------
+
+> (syntax-map fn stx)
+syntax-map : (stx -> 'a) stx -> (list-of 'a)
+
+Applies fn to every element in stx, returning a list of the results
+
+
+> (syntax-append-map fn stx)
+syntax-append-map : (stx -> (list-of 'a)) stx -> (list-of 'a)
+
+Applies fn to every element in stx. appending the results.
+
+
+> (symbolic-identifier=? stx1 stx2)
+symbolic-identifier=? : stx stx -> (U #t #f)
+
+Returns #t if the datums that stx1 and stx2 represent are eq?
+
+
+> (atom->string atom)
+atom->string : (U string symbol number stx) -> string
+
+Converts atom to a string
+
+
+> (make-syntax-symbol stx . args)
+make-syntax-symbol : stx (U string symbol number stx) ... -> stx
+
+Concatentates the string representations of args and
+converts to syntax in the lexical context of stx.  Useful
+for constructing identifiers.  For example:
+
+  (make-syntax-symbol stx 'make- 'foo)
+
+creates syntax of make-foo in the lexical context of stx
+
+
+
+trace.ss
+--------
+
+> (define-traced (name arg ...) expr1 expr2 ...)
+> (define-traced name (lambda (arg1 arg2 ...) expr1 expr2 ...))
+> (define-traced name (opt-lambda (arg1 arg2 ...) expr1 expr2 ...))
+Syntax
+
+Define name in the usual way, except procedure entry and
+exit is logged to the current-output-port.  
+
+> (lambda-traced (arg ...) expr ...)
+
+Like define-traced above, but expands to a lambda, not a
+define, and output goes via the same system as debug.ss
+above.
+
+
+write-through-cache.ss
+----------------------
+
+A write-throught cache is essentially a hash-table that calls user 
+supplied functions to load and store data.  This is useful for, e.g.,
+caching database values so that writes are always send to the database
+(so it is always up-to-date) and data is only loaded as needed.
+
+> (make-write-through-cache load store)
+make-write-through-cache : ('a -> 'b) ('a 'b -> void) -> cache
+
+Creates a write-through cache using the given load and store functions.
+Load is given a key and must return a value.  Store is given a key and 
+value.
+
+
+> (cache-get cache key)
+cache-get : cache 'a -> 'b
+
+Gets a value from the cache.  If the cache contains no value for key
+load is called to retrieve a value.  If the cache contains a value
+that value is returned and load is NOT called.
+
+
+> (cache-set! cache key value)
+cache-set! : cache 'a 'b -> void
+
+Sets a value in the cache and calls store to update whatever data source
+this cache represents.
+
+
+> (cache-clear! cache)
+cache-clear! : cache -> void
+
+Clears all values in the cache, but does not call load or store.  Useful
+to control memory consumption or for testing.
+
+
+
+yield.ss
+--------
+
+Implements the "yield" operator of Ruby / Python using continuations.
+"Yield" allows the programmer to pause the execution of a procedure,
+returning a result and continuing execution from the same point in the
+next invocation of the procedure.
+
+Supports procedures with multiple arguments and return types. For 
+example:
+
+  (define calc
+    (make-yieldable
+      (lambda (yield)
+        (lambda (a b)
+          (let-values ([(c d) (yield (values (+ a b) (- a b)))])
+            (values (* c d) (/ c d)))))))
+          
+  (define-values (w x)
+    (calc 6 2))
+    
+  (define-values (y z)
+    (calc 8 4))
+    
+In the example, the first call to calc returns at the call to yield.
+w and x are bound to the values 8 (6+2) and 4 (6-2). The second call to 
+calc resumes from the same point, and the arguments are bound to c and 
+d instead of a and b. y and z are bound to the values 32 (8*4) and 2 (8/4).
+
+> (make-yieldable yield)
+make-yieldbale : (yield-proc -> target-proc) -> target-proc
+
+yield-proc and target-proc have symmetric contracts:
+
+    yield-proc : a b c -> d e
+    target-proc : d e -> a b c
+
+The example above demonstrates the use of this procedure.
+
+> (yieldable yield-identifier stmt ...)
+syntax
+
+A syntactic form of make-yieldable that allows the programmer to avoid
+writing so many lambdas. For example:
+
+  (define calc
+    (yieldable yield
+      (lambda (a b)
+        (let-values ([(c d) (yield (values (+ a b) (- a b)))])
+          (values (* c d) (/ c d))))))
+
+Check API
+=========
+
+The Check API provides types and procedures for validating data entered 
+by a user. This is work-in-progress: it is likely to be updated and 
+repackaged separately at some point.
+
+The programmer writes a suite of "check" procedures that run on data
+structures and check whether or not it is valid. Checks return lists of 
+annotated "check-results" that report problems to the user and can be 
+mapped to appropriate places in the UI.
+
+Checks
+------
+
+Checks are blocks of code that accept some sort of data as an input
+and return a list of check-result structures:
+
+    check : any ... -> (list-of check-result)
+
+An "atomic check" checks a single property of the data, for example:
+
+  - the date is [not] in the right range;
+  - the username does [not] have the right format;
+  - the date of the outward journey is before the date of the return
+    journey;
+  - and so on...
+
+Atomic checks return a single check-result embedded in a list:
+
+    atomic-check : any ... -> (list check-result)
+
+Compound checks group atomic checks together into blocks that return 
+arbitrary lists of check-results. The Check library provides procedures 
+and macros for processing lists of check-results.
+
+Types of check-result
+---------------------
+
+A check-result is a structure of a type in the hierarchy:
+
+  check-result
+    check-success
+    check-problem
+      check-warning
+      check-failure
+      check-error
+
+A check-success indicates that a particular constraint on the data 
+holds; a check-problem indicates that the property does not hold. There 
+are three types of check-problem:
+
+- A check-failure indicates a definite problem with the data. The
+  application should not allow the data to be processed until the user
+  has corrected their mistakes.
+
+- A check-warning indicates a potential problem with the data. The
+  application cannot tell whether this is a real problem, or whether
+  it is an odd circumstance that the user has anticipated. The 
+  application should inform the user of the warning and allow them
+  to proceed if they think it is okay.
+
+- A check-error indicates that an exception has been raised when 
+  processing a check. This is a convenience for the programmer: it 
+  allows bugs in one check to be reported in the UI without affecting
+  the results of other checks.
+
+The types of the check-result structures are as follows (all the usual
+constructors, predicates, accessors, mutators and so on are provided
+by check.ss):
+
+> (define-struct check-result (message annotations) #f)
+struct check-result : string (alist-of symbol any)
+
+The message string should be formatted to describe the result to the
+user to an appropriate level of detail. Arbitrary annotations can be
+attached to the result to help deliver the message to the user in an
+appropriate fashion.
+
+> (define-struct (check-problem check-result) () #f)
+> (define-struct (check-success check-result) () #f)
+> (define-struct (check-failure check-problem) () #f)
+> (define-struct (check-warning check-problem) () #f)
+
+These types have the same contract as check-result.
+
+> (define-struct (check-error   check-problem) (exn) #f)
+struct check-error :  string (alist-of symbol any) exn
+
+The check-error type has an extra field to store the exception raised.
+
+Creating check-results
+----------------------
+
+Check results are typically created with messages, and annotated and
+combined later using list-processing combinators:
+
+> (pass)
+pass : -> (list check-success)
+
+Creates a single check-success with the message "Okay".
+
+> (fail message)
+fail : string -> (list check-failure)
+
+Creates a single check-failure with the specified message.
+
+> (warn message)
+warn : string -> (list check-warning)
+
+Creates a single check-warning with the specified message.
+
+> (check-with-handlers thunk)
+check-with-handlers : (-> (list-of check-result))
+                   -> (list-of check-result)
+
+Wraps a thunk with a with-handlers block that catches any exceptions
+and returns a 1-length list containing a check-error.
+
+> (check-until-problems thunk ...)
+check-until-problems : (-> (list-of check-result))
+                       ...
+                    -> (list-of check-problem)
+
+Runs each of the check thunks in turn until one of them returns a list 
+containing one or more check-problems. Returns the results of that 
+thunk.
+
+Result list combinators
+-----------------------
+
+> (check-all results ...)
+check-all : (list-of check-result) ... -> (list-of check-result)
+
+Combines several results lists into a single list. Analogous to append 
+(with a nice contract on it).
+
+> (check-with-annotations annotations thunk)
+check-with-annotations : (alist-of symbol any)
+                         (list-of check-result)
+                      -> (list-of check-result)
+
+Annotates a list of results with the supplied annotations. Returns the
+annotated results.
+
+> (check-problems? results)
+check-problems? : (list-of check-result) -> boolean
+
+Returns #t if there are any check-problems in results: #f otherwise.
+
+> (check-results->problems results)
+check-results->problems : (list-of check-result)
+                       -> (list-of check-problem)
+
+Filters a list of results for problems (i.e. everything except
+check-successes).
+
+> (check-results->warnings+failures+errors results)
+check-results->warnings+failures+errors
+     : (list-of check-result)
+    -> (list-of check-warning)
+       (list-of check-failure)
+       (list-of check-error)
+
+Filters a list of results for problems and splits the problems
+into three lists: warnings, failures and errors.
+
+Annotations
+-----------
+
+> (check-result-annotation? result name)
+check-result-annotation : check-result symbol -> boolean
+
+Determines whether the result has the specified annotation.
+
+> (check-result-annotation result name)
+check-result-annotation : check-result symbol -> any | exn:fail:unlib
+
+Returns the value mapped to the specified key in the result's 
+annotations. Raises exn:fail:unlib if the annotation cannot be found.
+
+> (check-result-annotation/default result name default)
+check-result-annotation : check-result symbol -> any
+
+Returns the value mapped to the specified key in the result's 
+annotations. Returns default if the annotation cannot be found.
+
+> (annotate-check-result result annotations)
+annotate-check-result : check-result (alist-of symbol any)
+                     -> check-result
+
+Adds the specified annotations to the result. Works on a single 
+check-result only: the simplest way to annotate lists of results is 
+using check-with-annotations.
