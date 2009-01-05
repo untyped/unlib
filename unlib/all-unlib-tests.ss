@@ -1,0 +1,68 @@
+#lang scheme/base
+
+(require "bytes-test.ss"
+         "cache-test.ss"
+         "cache-internal-test.ss"
+         "convert-test.ss"
+         "contract-test.ss"
+         "debug-test.ss"
+         "enum-test.ss"
+         "exn-test.ss"
+         "file-test.ss"
+         "generator-test.ss"
+         "gen-test.ss"
+         "hash-table-test.ss"
+         "hash-test.ss"
+         "lifebox-test.ss"
+         "list-test.ss"
+         "log-test.ss"
+         "match-test.ss"
+         "number-test.ss"
+         "pipeline-test.ss"
+         "preprocess-test.ss"
+         "project-test.ss"
+         "profile-test.ss"
+         "string-test.ss"
+         "symbol-test.ss"
+         "test-base.ss"
+         "time-test.ss"
+         "trace-test.ss"
+         "url-test.ss"
+         "yield-test.ss")
+
+; Tests ------------------------------------------
+
+(define all-unlib-tests
+  (test-suite "unlib"
+    bytes-tests
+    cache-tests
+    cache-internal-tests
+    contract-tests
+    convert-tests
+    debug-tests
+    enum-tests
+    exn-tests
+    file-tests
+    generator-tests
+    gen-tests
+    hash-table-tests
+    hash-tests
+    lifebox-tests
+    list-tests
+    log-tests
+    match-tests
+    number-tests
+    pipeline-tests
+    preprocess-tests
+    profile-tests
+    project-tests
+    string-tests
+    symbol-tests
+    time-tests
+    trace-tests
+    url-tests
+    yield-tests))
+
+; Provide statements -----------------------------
+
+(provide all-unlib-tests)
