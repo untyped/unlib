@@ -8,7 +8,7 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "Nothing yet..."))))
+    (ul (li "added " (tt "keyword-apply*") " macro in " (tt "keyword.ss") "."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))

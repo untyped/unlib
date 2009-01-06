@@ -13,6 +13,7 @@
          "gen-test.ss"
          "hash-table-test.ss"
          "hash-test.ss"
+         "keyword-test.ss"
          "lifebox-test.ss"
          "list-test.ss"
          "log-test.ss"
@@ -47,6 +48,7 @@
     gen-tests
     hash-table-tests
     hash-tests
+    keyword-tests
     lifebox-tests
     list-tests
     log-tests
