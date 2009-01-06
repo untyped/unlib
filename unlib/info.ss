@@ -1,3 +1,4 @@
+#lang setup/infotab
 
 (define name    "Unlib")
 (define version "3.x")
