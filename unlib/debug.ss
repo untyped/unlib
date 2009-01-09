@@ -33,7 +33,7 @@
     [(_ msg expr)
      (let ([message (syntax->datum #'msg)])
        (if (string? message)
-           (let ([exports (expand-export #'expr)])
+           (let ([exports (expand-export #'expr null)])
              (debug message (sort (map export-out-sym exports) symbol<?)))
            (raise-syntax-error #f "expected string literal" stx #'msg))
        #'expr)]))
