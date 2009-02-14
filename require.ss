@@ -49,26 +49,8 @@
              [(_)             (datum->syntax stx `(planet package-spec))]
              [(_ module-spec) (datum->syntax stx `(planet ,(string->symbol (format "~a/~a" 'package-spec (syntax->datum #'module-spec)))))])))]))
 
-; (_ id url-string)
-; (_ id url-string revision-number-or-head)
-(define-syntax (define-svn-require-syntax stx)
-  (syntax-case stx ()
-    [(_ id repos) #'(define-svn-require-syntax id repos 'HEAD)]
-    [(_ id repos revision)
-     (identifier? #'id)
-     (cond [(not (string? (syntax->datum #'repos)))
-            (raise-syntax-error #f "repository location must be a string literal" stx #'repos)]
-           [(not (or (natural? (syntax->datum #'revision))
-                     (eq? (syntax->datum #'revision) 'HEAD)))
-            (raise-syntax-error #f "revision must be (U natural 'head)" stx #'revision)]
-           [else (let* ([repos    (syntax->datum #'repos)]
-                        [revision (syntax->datum #'revision)]
-                        [path     (svn-checkout repos revision (syntax->datum #'id))])
-                   #`(define-file-require-syntax id #,(path->string path)))])]))
-
 ; Provide statements -----------------------------
 
 (provide directory-in
          define-file-require-syntax
-         define-planet-require-syntax
-         define-svn-require-syntax)
+         define-planet-require-syntax)
