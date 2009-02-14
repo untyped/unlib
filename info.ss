@@ -9,7 +9,7 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "added " (tt "define-package-aliases") " to " (tt "require.ss") ";")
+    (ul (li "added " (tt "define-library-aliases") " to " (tt "require.ss") ";")
         (li "added documentation for " (tt "require.ss") "."))))
 
 (define scribblings

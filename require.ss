@@ -27,14 +27,14 @@
 
 ; (_ id relative-or-absolute-directory-string)
 ; (_ (id id) relative-or-absolute-directory-string)
-(define-syntax (define-package-aliases stx)
+(define-syntax (define-library-aliases stx)
   (syntax-case* stx (file planet) symbolic-identifier=?
     [(_ id clause kws ...)
      (identifier? #'id)
      (with-syntax ([id-in  (make-id #'id #'id '-in)]
                    [id-out (make-id #'id #'id '-out)])
        (syntax/loc stx
-         (define-package-aliases (id-in id-out) clause kws ...)))]
+         (define-library-aliases (id-in id-out) clause kws ...)))]
     [(_ (id-in id-out) (file directory) kws ...)
      (and (identifier? #'id-in)
           (identifier? #'id-out)
@@ -42,7 +42,7 @@
      (quasisyntax/loc stx
        (begin
          (define-syntaxes (id-in id-out)
-           (make-file-package-transformers directory))
+           (make-file-library-transformers directory))
          #,(if (memq '#:provide (syntax->datum #'(kws ...)))
                #'(provide id-in id-out)
                #'(begin))))]
@@ -53,7 +53,7 @@
      (quasisyntax/loc stx
        (begin
          (define-syntaxes (id-in id-out)
-           (make-planet-package-transformers 'spec))
+           (make-planet-library-transformers 'spec))
          #,(if (memq '#:provide (syntax->datum #'(kws ...)))
                #'(provide id-in id-out)
                #'(begin))))]))
@@ -61,4 +61,4 @@
 ; Provide statements -----------------------------
 
 (provide directory-in
-         define-package-aliases)
+         define-library-aliases)

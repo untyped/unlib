@@ -34,7 +34,7 @@
        (expand-export new-stx modes)))))
 
 ; path -> require-transformer provide-transformer
-(define (make-file-package-transformers root-spec)
+(define (make-file-library-transformers root-spec)
   (define root-path
     (path->complete-path (expand-user-path (build-path root-spec))))
   (define (make-path datum)
@@ -66,7 +66,7 @@
          [(_)            `(all-from-out (file ,(make-path 'main)))]))))))
 
 ; symbol -> require-transformer provide-transformer
-(define (make-planet-package-transformers root-spec)
+(define (make-planet-library-transformers root-spec)
   (define (make-path datum)
     (string->symbol (format "~a/~a" root-spec datum)))
   (values
@@ -98,6 +98,6 @@
 (provide/contract
  [scheme-source-extensions         (listof bytes?)]
  [scheme-source-path?              (-> path? boolean?)]
- [make-file-package-transformers   procedure?]
- [make-planet-package-transformers procedure?])
+ [make-file-library-transformers   procedure?]
+ [make-planet-library-transformers procedure?])
 
