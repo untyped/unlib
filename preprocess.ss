@@ -1,7 +1,9 @@
 #lang scheme/base
 
+(require "base.ss")
+
 (require preprocessor/mzpp
-         (planet schematics/namespace/namespace))
+         (namespace-in namespace))
 
 ; Procedures -----------------------------------
 

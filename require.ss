@@ -4,9 +4,7 @@
                      scheme/path
                      scheme/provide-transform
                      scheme/require-transform
-                     "base.ss"
-                     "debug.ss"
-                     "number.ss"
+                     srfi/26
                      "require-internal.ss"
                      "syntax.ss")
          scheme/require-syntax

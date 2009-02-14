@@ -1,11 +1,11 @@
 #lang scheme/base
 
-(require scheme/file
+(require scheme/contract
+         scheme/file
          scheme/path
          scheme/provide-transform
          scheme/require-transform
-         scheme/system
-         "base.ss")
+         scheme/system)
 
 ; (listof bytes)
 (define scheme-source-extensions

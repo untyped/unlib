@@ -6,7 +6,7 @@
          scheme/port
          (except-in srfi/1 any)
          srfi/13
-         (planet ryanc/scripting/read)
+         ;(scripting-in read)
          "base.ss")
 
 ; path path -> boolean
