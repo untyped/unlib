@@ -6,7 +6,7 @@
 
 Dave Gurnell, Noel Welsh, David Brooks and Matt Jadud
 
-@tt{{dave, noel, matt} at @link["http://www.untyped.com"]{@tt{untyped}}}
+@tt{{dave, noel, djb, matt} at @link["http://www.untyped.com"]{@tt{untyped}}}
 
 @italic{Unlib} is a collection of general utilities for programming applications in PLT Scheme.
 At Untyped we mostly write web software, so expect to find useful utilities for that kind of thing.
@@ -32,6 +32,7 @@ Unlib contains a few more modules than listed here. There are several experiment
 @include-section{parameter.scrbl}
 @include-section{pipeline.scrbl}
 @include-section{profile.scrbl}
+@include-section{require.scrbl}
 @include-section{scribble.scrbl}
 @include-section{string.scrbl}
 @include-section{symbol.scrbl}
