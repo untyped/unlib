@@ -9,7 +9,8 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "added " (tt "keyword-apply*") " macro in " (tt "keyword.ss") "."))))
+    (ul (li "added " (tt "define-file-require-syntax") " and " (tt "define-planet-require-syntax") " to " (tt "require.ss") ";")
+        (li "added documentation for " (tt "require.ss") "."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
