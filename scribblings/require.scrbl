@@ -2,39 +2,48 @@
 
 @(require (file "base.ss"))
 
-@title[#:tag "require"]{Require shortcuts}
+@title[#:tag "require"]{Require utilities}
 
 @defmodule[(planet untyped/unlib/require)]{
 
-Shortcuts for use in @scheme[require] statements.
+Utilities for use with @scheme[require] statements.
 
 @defform[(directory-in path)]{
 Expands to @scheme[(combine-in (file "foo.ss") ...)] for all Scheme source files (@filepath{.ss} and @filepath{.scm} extensions) in @scheme[path]. @scheme[path] must be a string literal.
 
-Be aware that this form is sensitive to the value of @scheme[current-directory] and may not be useful in all cases. Future improvements will bind the form to the directory containing the current module.}
+@italic{Known issues:} This form is sensitive to the value of @scheme[current-directory] and may not be useful in all cases. Future improvements will force @scheme[path] to be relative to the directory containing the current module.}
 
-@defform[(define-file-require-syntax id directory)]{
-Binds @scheme[id] to a procedure that generates require statements for modules in a local @scheme[directory]. @scheme[directory] must be a string literal. Modules must have a @filepath{.ss} extension. For example:
+@defform*/subs[#:literals (file planet string id)
+               ((define-package-aliases id source kw ...)
+                (define-package-aliases (in-id out-id) source kw ...))
+               ([source      (file dir-spec)
+                             (planet planet-spec)]
+                [dir-spec    string]
+                [planet-spec id]
+                [kw          #:provide])]{
+The two-identifier form binds @scheme[in-id] and @scheme[out-id] to require- and provide-transformers that require and provide modules from the specified package. The single-identifier form expands to the two-identifier form by appending @schemeidfont{-in} and @schemeidfont{-out} to @scheme[id]. If the @scheme[#:provide] keyword is specified, @scheme[provide] statements are automatically injected for @scheme[in-id] and @scheme[out-id].
 
-@schemeblock[
-  (define-file-require-syntax foo-in "foo")
-  
-  (code:comment "Require foo/bar.ss:")
-  (require (foo-in bar))
-  
-  (code:comment "Require foo/bar/baz.ss:")
-  (require (foo-in bar/baz))]}
-
-@defform[(define-planet-require-syntax id shorthand-package-spec)]{
-Binds @scheme[id] to a procedure that generates require statements for modules in the PLaneT package with the specified @scheme[shorthand-package-spec]. For example:
+@scheme[dir-spec] must be a string literal, which is expanded to a path using:
 
 @schemeblock[
-  (define-planet-require-syntax foo-in untyped/foo:1:0)
+  (path->complete-path (expand-user-path (build-path dir-spec)))]
+
+This means platform-specific shorthands such as @scheme{~} are valid in directory names. @scheme[planet-spec] must be a shorthand PLaneT package name. Module filenames must end with @filepath{.ss}.
+
+Examples:
+
+@schemeblock[
+  (code:comment "Define (and provide) a-in and a-out:")
+  (define-package-aliases a (file "foo") #:provide)
   
-  (code:comment "Require untyped/foo:1:0/bar.ss:")
-  (require (foo-in bar))
+  (require (a-in)       (code:comment "require a/main.ss")
+           (a-in [b c]) (code:comment "require a/b.ss and a/c.ss")
+           (a-in d/e))  (code:comment "require a/d/e.ss")
   
-  (code:comment "Require untyped/foo:1:0/bar/baz.ss:")
-  (require (foo-in bar/baz))]}
+  (code:comment "Define (but do not provide) x-in and x-out:")
+  (define-package-aliases x (planet untyped/bar:1:2))
+  
+  (require (x-in a))  (code:comment "require untyped/bar:1:2/a.ss")
+  (provide (x-out a)) (code:comment "provide everything from untyped/bar:1:2/a.ss")]}
 
 } @;{end defmodule}
