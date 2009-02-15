@@ -11,17 +11,18 @@
          (for-template scheme/base))
 
 ; (_ string)
-(define-syntax (directory-in stx)
-  (syntax-case stx ()
-    [(_ dirname)
-     (if (string? (syntax->datum #'dirname))
-         (let ([path (path->complete-path (build-path (syntax->datum #'dirname)))])
-           #`(combine-in #,@(map (lambda (path)
-                                   #`(file #,(path->string path)))
-                                 (filter scheme-source-path? 
-                                         (map (cut build-path path <>)
-                                              (directory-list path))))))
-         (raise-syntax-error #f "directory name must be a string literal" stx #'dirname))]))
+(define-require-syntax directory-in
+  (lambda (stx)
+    (syntax-case stx ()
+      [(_ dirname)
+       (if (string? (syntax->datum #'dirname))
+           (let ([path (path->complete-path (build-path (syntax->datum #'dirname)))])
+             #`(combine-in #,@(map (lambda (path)
+                                     #`(file #,(path->string path)))
+                                   (filter scheme-source-path? 
+                                           (map (cut build-path path <>)
+                                                (directory-list path))))))
+           (raise-syntax-error #f "directory name must be a string literal" stx #'dirname))])))
 
 ; (_ id relative-or-absolute-directory-string)
 ; (_ (id id) relative-or-absolute-directory-string)
