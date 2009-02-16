@@ -68,10 +68,10 @@
          (list-swap data index2 index1)]
         [(= index1 index2)
          (raise-exn exn:fail:contract
-           (format "List indices must be differnet: ~a ~a" index1 index2))]
+                    (format "List indices must be differnet: ~a ~a" index1 index2))]
         [(or (< index2 0) (> index1 (length data)))
          (raise-exn exn:fail:contract
-           (format "List indices out of bounds: ~a ~a" index1 index2))]
+                    (format "List indices out of bounds: ~a ~a" index1 index2))]
         [else (let ([item1    (list-ref data index1)]
                     [item2    (list-ref data index2)]
                     [slice0-1 (take data index1)]
@@ -103,6 +103,13 @@
 ; (listof any) integer [any] -> (listof any)
 (define (list-pad-right lis target-length [item #f])
   (reverse (list-pad (reverse lis) target-length item)))
+
+; (listof any) integer -> boolean
+(define (list-ref? lis index)
+  (if (zero? index)
+      (pair? lis)
+      (and (pair? lis) (list-ref? (cdr lis) (sub1 index)))))
+
 
 ;  (listof any1)
 ;  (listof any2)
@@ -162,10 +169,10 @@
 (define (unzip-values input)
   (define accum
     (for/fold ([accum (void)])
-              ([item input])
-              (if (void? accum)
-                  (map cons item (make-list (length item) null))
-                  (map cons item accum))))
+      ([item input])
+      (if (void? accum)
+          (map cons item (make-list (length item) null))
+          (map cons item accum))))
   (apply values (map reverse accum)))
 
 ; Association lists ------------------------------
@@ -219,7 +226,7 @@
          [(list-rest key val)
           (proc key val)]
          [other (raise-exn exn:fail:contract 
-                  (format "Expected (listof pair), recevied ~s" alist))])
+                           (format "Expected (listof pair), recevied ~s" alist))])
        alist))
 
 ; (any1 any2 -> void) (listof (cons any1 any2)) -> void
@@ -232,7 +239,7 @@
               [(list-rest key val)
                (proc key val)]
               [other (raise-exn exn:fail:contract 
-                       (format "Expected (listof pair), recevied ~s" alist))])
+                                (format "Expected (listof pair), recevied ~s" alist))])
             alist))
 
 ; (alistof a b) (alistof c d) [(U 'first 'second)] -> (alistof (U a c) (U b d))
@@ -286,6 +293,7 @@
  [unzip-values        (-> sequence? any)]
  [list-pad            (->* (qlist/c integer?) (any/c) any)]
  [list-pad-right      (->* (qlist/c integer?) (any/c) any)]
+ [list-ref?           (-> qlist/c natural? any)]
  [assoc-value         (-> any/c qlist/c any)]
  [assoc-value/default (-> any/c qlist/c any/c any)]
  [alist-set           (->* (any/c any/c qlist/c) (procedure?) any)]

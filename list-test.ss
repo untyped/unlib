@@ -65,6 +65,15 @@
       (check-equal? (list-pad-right (list 1 2 3 4) 3)    (list 1 2 3 4)          "target-length too small")
       (check-equal? (list-pad-right (list 1 2 3 4) 4)    (list 1 2 3 4)          "target-length the same"))
     
+    (test-case "list-ref?"
+      (check-false (list-ref? null 0)     "first (zeroth) element of null list referenceable")
+      (check-false (list-ref? null 1)     "second element of null list referenceable")
+      (check-true  (list-ref? '(a) 0)     "first (zeroth) element of single-element not referenceable")
+      (check-false (list-ref? '(a) 1)     "second element of single-element list found")
+      (check-true  (list-ref? '(a b c) 2) "referenceable element index not found")
+      (check-false (list-ref? '(a b c) 3) "unreferenceable element index found")
+      (check-exn exn:fail:contract? (lambda () (list-ref? '(a b c) -1)) "non-natural index raises contract exception"))
+    
     (test-case "merge-sorted-lists"
       (check-equal? (merge-sorted-lists '(1 3 5 7 9) '(2 4 6 8 10) = <) '(1 2 3 4 5 6 7 8 9 10) "no duplicates")
       (check-equal? (merge-sorted-lists '(1 2 3 4 5) '(3 4 5 6 7)  = <) '(1 2 3 4 5 6 7)        "duplicates")
@@ -76,14 +85,14 @@
       (check-equal? (char-iota 5 #\a 2) (string->list "acegi")                      "step 2"))
     
     (test-equal? "unzip-values"
-      (call-with-values (cut unzip-values '((1 2 3)
-                                            (4 5 6)
-                                            (7 8 9)
-                                            (10 11 12)))
-                        list)
-      '((1 4 7 10)
-        (2 5 8 11)
-        (3 6 9 12)))
+                 (call-with-values (cut unzip-values '((1 2 3)
+                                                       (4 5 6)
+                                                       (7 8 9)
+                                                       (10 11 12)))
+                                   list)
+                 '((1 4 7 10)
+                   (2 5 8 11)
+                   (3 6 9 12)))
     
     ; Association lists --------------------------
     
@@ -141,12 +150,12 @@
         (check equal? (assoc-value/default 'key3 test3 #f) "Value 3" "check 3i")))
     
     (test-equal? "alist-map"
-      (alist-map string-append '(("a" . "1") ("b" . "2") ("c" . "3")))
-      '("a1" "b2" "c3"))
+                 (alist-map string-append '(("a" . "1") ("b" . "2") ("c" . "3")))
+                 '("a1" "b2" "c3"))
     
     (test-exn "alist-map : non-pair encountered"
-      exn:fail:contract?
-      (cut alist-map string-append '(("a" . "1") "b" ("c" . "3"))))
+              exn:fail:contract?
+              (cut alist-map string-append '(("a" . "1") "b" ("c" . "3"))))
     
     (test-case "alist-for-each"
       (let ([keys ""] [values ""])
@@ -161,11 +170,11 @@
         (check equal? values "123")))
     
     (test-exn "alist-for-each : non-pair encountered"
-      exn:fail:contract?
-      (cut alist-for-each
-           (lambda (key value)
-             (format "~a:~a~n" key value))
-           '(("a" . "1") "b" ("c" . "3"))))
+              exn:fail:contract?
+              (cut alist-for-each
+                   (lambda (key value)
+                     (format "~a:~a~n" key value))
+                   '(("a" . "1") "b" ("c" . "3"))))
     
     (test-case "alist-merge"
       (check-equal? (alist-merge '((a . 1) (b . 2) (c . 3))

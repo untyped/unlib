@@ -80,6 +80,16 @@ Creates a new list by repeatedly adds @scheme[item] to the right of @scheme[lis]
   (list-pad-right '(1 2 3) 5 #t)
   (list-pad-right '(1 2 3 4 5) 3)]}
 
+@defproc[(list-ref? [lis list?] [n natural?]) boolean?]{
+
+Returns @scheme[#t] if @scheme[lis] contains @scheme[n] or more items.
+
+@examples[
+  #:eval list-eval
+  (list-ref? '() 0)
+  (list-ref? '(1 2 3) 0)
+  (list-ref? '(1 2 3) 3)]}
+
 @defproc[(merge-sorted-lists [list1 list?]
                              [list2 list?]
                              [same? (any any -> boolean?)]
