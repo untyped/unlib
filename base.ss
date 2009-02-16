@@ -9,7 +9,6 @@
 
 (define-library-aliases namespace  (planet schematics/namespace:1)  #:provide)
 (define-library-aliases schemeunit (planet schematics/schemeunit:3) #:provide)
-(define-library-aliases scripting  (planet ryanc/scripting:1)       #:provide)
 
 ; Provide statements --------------------------- 
 
