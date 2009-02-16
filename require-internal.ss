@@ -48,10 +48,16 @@
       (datum->syntax
        stx 
        (syntax-case stx ()
-         [(_ [path ...]) `(combine-in ,@(map (lambda (stx)
+         [(_ [path ...]) (andmap identifier? (syntax->list #'(path ...)))
+                         `(combine-in ,@(map (lambda (stx)
                                                `(file ,(make-path (syntax->datum stx))))
                                              (syntax->list #'(path ...))))]
-         [(_ path)       `(file ,(make-path (syntax->datum #'path)))]
+         [(_ path ...)   (andmap identifier? (syntax->list #'(path ...)))
+                         `(combine-in ,@(map (lambda (stx)
+                                               `(file ,(make-path (syntax->datum stx))))
+                                             (syntax->list #'(path ...))))]
+         [(_ path)       (identifier? #'path)
+                         `(file ,(make-path (syntax->datum #'path)))]
          [(_)            `(file ,(make-path 'main))]))))
    (make-provide-macro
     (syntax-local-provide-certifier)
@@ -59,10 +65,16 @@
       (datum->syntax
        stx 
        (syntax-case stx ()
-         [(_ [path ...]) `(combine-out ,@(map (lambda (stx)
+         [(_ [path ...]) (andmap identifier? (syntax->list #'(path ...)))
+                         `(combine-out ,@(map (lambda (stx)
                                                 `(all-from-out (file ,(make-path (syntax->datum stx)))))
                                               (syntax->list #'(path ...))))]
-         [(_ path)       `(all-from-out (file ,(make-path (syntax->datum #'path))))]
+         [(_ path ...)   (andmap identifier? (syntax->list #'(path ...)))
+                         `(combine-out ,@(map (lambda (stx)
+                                                `(all-from-out (file ,(make-path (syntax->datum stx)))))
+                                              (syntax->list #'(path ...))))]
+         [(_ path)       (identifier? #'path)
+                         `(all-from-out (file ,(make-path (syntax->datum #'path))))]
          [(_)            `(all-from-out (file ,(make-path 'main)))]))))))
 
 ; symbol -> require-transformer provide-transformer
@@ -81,17 +93,17 @@
                                              (syntax->list #'(path ...))))]
          [(_ path)       `(planet ,(make-path (syntax->datum #'path)))]
          [(_)            `(planet ,(make-path 'main))]))))
-    (make-provide-macro
-     (syntax-local-provide-certifier)
-     (lambda (stx)
-       (datum->syntax
-        stx 
-        (syntax-case stx ()
-          [(_ [path ...]) `(combine-out ,@(map (lambda (stx)
-                                                 `(all-from-out (planet ,(make-path (syntax->datum stx)))))
-                                               (syntax->list #'(path ...))))]
-          [(_ path)       `(all-from-out (planet ,(make-path (syntax->datum #'path))))]
-          [(_)            `(all-from-out (planet ,(make-path 'main)))]))))))
+   (make-provide-macro
+    (syntax-local-provide-certifier)
+    (lambda (stx)
+      (datum->syntax
+       stx 
+       (syntax-case stx ()
+         [(_ [path ...]) `(combine-out ,@(map (lambda (stx)
+                                                `(all-from-out (planet ,(make-path (syntax->datum stx)))))
+                                              (syntax->list #'(path ...))))]
+         [(_ path)       `(all-from-out (planet ,(make-path (syntax->datum #'path))))]
+         [(_)            `(all-from-out (planet ,(make-path 'main)))]))))))
 
 ; Provide statements -----------------------------
 

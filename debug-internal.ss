@@ -67,13 +67,13 @@
      #`(debug (format "Reached ~a" #,(syntax-location-string stx)) expr)]))
 
 ; (_ id value)
-(define-syntax (define-debug stx)
+(define-syntax (define/debug stx)
   (syntax-case stx ()
     [(_ id val)
      #`(define id (debug (symbol->string 'id) val))]))
 
 ; (_ (id ...) value)
-(define-syntax (define-values-debug stx)
+(define-syntax (define-values/debug stx)
   (syntax-case stx ()
     [(_ (id ...) val)
      #`(define-values (id ...) 
@@ -81,28 +81,28 @@
                               (call-with-values (lambda () val) list))))]))
 
 ; (_ ([id value] ...) expr ...)
-(define-syntax (let-debug stx)
+(define-syntax (let/debug stx)
   (syntax-case stx ()
     [(_ ([var val] ...) exp ...)
      #'(let ([var (debug (symbol->string 'var) val)] ...)
          exp ...)]))
 
 ; (_ ([id value] ...) expr ...)
-(define-syntax (let*-debug stx)
+(define-syntax (let*/debug stx)
   (syntax-case stx ()
     [(_ ([var val] ...) exp ...)
      #'(let* ([var (debug (symbol->string 'var) val)] ...)
          exp ...)]))
 
 ; (_ ([id value] ...) expr ...)
-(define-syntax (letrec-debug stx)
+(define-syntax (letrec/debug stx)
   (syntax-case stx ()
     [(_ ([var val] ...) exp ...)
      #'(letrec ([var (debug (symbol->string 'var) val)] ...)
          exp ...)]))
 
 ; (_ ([(id ...) value] ...) expr ...)
-(define-syntax (let-values-debug stx)
+(define-syntax (let-values/debug stx)
   (syntax-case stx ()
     [(_ ([(var ...) val] ...) exp ...)
      #`(let-values ([(var ...)
@@ -112,7 +112,7 @@
          exp ...)]))
 
 ; (_ ([(id ...) value] ...) expr ...)
-(define-syntax (let*-values-debug stx)
+(define-syntax (let*-values/debug stx)
   (syntax-case stx ()
     [(_ ([(var ...) val] ...) exp ...)
      #`(let*-values ([(var ...)
@@ -122,7 +122,7 @@
          exp ...)]))
 
 ; (_ ([(id ...) value] ...) expr ...)
-(define-syntax (letrec-values-debug stx)
+(define-syntax (letrec-values/debug stx)
   (syntax-case stx ()
     [(_ ([(var ...) val] ...) exp ...)
      #`(letrec-values ([(var ...)
@@ -168,6 +168,17 @@
                        (or name '??))))])
        (continuation-mark-set->context (exn-continuation-marks exn))))
 
+; Deprecated aliases -----------------------------
+
+(define-syntax-rule (define-debug . any)        (define/debug . any))
+(define-syntax-rule (define-values-debug . any) (define-values/debug . any))
+(define-syntax-rule (let-debug . any)           (let/debug . any))
+(define-syntax-rule (let*-debug . any)          (let*/debug . any))
+(define-syntax-rule (letrec-debug . any)        (letrec/debug . any))
+(define-syntax-rule (let-values-debug . any)    (let-values/debug . any))
+(define-syntax-rule (let*-values-debug . any)   (let*-values/debug . any))
+(define-syntax-rule (letrec-values-debug . any) (letrec-values/debug . any))
+
 ; Helpers ----------------------------------------
 
 ; path -> string
@@ -189,6 +200,14 @@
 
 (provide debug*
          debug-location
+         define/debug
+         define-values/debug
+         let/debug
+         let*/debug
+         letrec/debug
+         let-values/debug
+         let*-values/debug
+         letrec-values/debug
          define-debug
          define-values-debug
          let-debug

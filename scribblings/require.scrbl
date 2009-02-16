@@ -38,9 +38,9 @@ Examples:
   (code:comment "Define (and provide) a-in and a-out:")
   (define-library-aliases a (file "foo") #:provide)
   
-  (require (a-in)       (code:comment "require a/main.ss")
-           (a-in [b c]) (code:comment "require a/b.ss and a/c.ss")
-           (a-in d/e))  (code:comment "require a/d/e.ss")
+  (require (a-in)      (code:comment "require a/main.ss")
+           (a-in b c)  (code:comment "require a/b.ss and a/c.ss")
+           (a-in d/e)) (code:comment "require a/d/e.ss")
   
   (code:comment "Define (but do not provide) x-in and x-out:")
   (define-library-aliases x (planet untyped/bar:1:2))

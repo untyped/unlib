@@ -39,51 +39,51 @@ Applies @scheme[proc] to @scheme[arg]@schemeidfont{s} and prints and returns the
   #:eval debug-eval
   (add1 (debug* "message" * 2 2))]}
 
-@defform[(define-debug id expr)]{
+@defform[(define/debug id expr)]{
 
 Expands to a @scheme[define] form that prints the value of @scheme[id] as a side effect.
 
 @examples[
   #:eval debug-eval
-  (define-debug test-data
+  (define/debug test-data
     (+ 1 2 3))]}
 
-@defform[(define-values-debug (id ...) expr)]{
+@defform[(define-values/debug (id ...) expr)]{
 
-Like @scheme[define-debug] but expands to a @scheme[define-values] form.
+Like @scheme[define/debug] but expands to a @scheme[define-values] form.
 
 @examples[
   #:eval debug-eval
-  (define-values-debug (a b)
+  (define-values/debug (a b)
     (values (+ 1 2) (+ 3 4)))]}
 
-@defform[(let-debug ([id expr] ...) expr ...)]{
+@defform[(let/debug ([id expr] ...) expr ...)]{
 Expands to a @scheme[let] form that prints the value of each @scheme[id] as it is assigned.
 
 @examples[
   #:eval debug-eval
-  (let-debug ([a 1] [b 2])
+  (let/debug ([a 1] [b 2])
     (+ a b))]}
 
-@defform[(let*-debug ([id expr] ...) expr ...)]{
-Like @scheme[let-debug] but expands to a @scheme[let*] form.}
+@defform[(let*/debug ([id expr] ...) expr ...)]{
+Like @scheme[let/debug] but expands to a @scheme[let*] form.}
 
-@defform[(letrec-debug ([id expr] ...) expr ...)]{
-Like @scheme[let-debug] but expands to a @scheme[letrec] form.}
+@defform[(letrec/debug ([id expr] ...) expr ...)]{
+Like @scheme[let/debug] but expands to a @scheme[letrec] form.}
 
-@defform[(let-values-debug ([(id ...) expr] ...) expr ...)]{
+@defform[(let-values/debug ([(id ...) expr] ...) expr ...)]{
 Expands to a @scheme[let-values] form that prints the value of each @scheme[id] as it is assigned.
 
 @examples[
   #:eval debug-eval
-  (let-values-debug ([(a b) (values 1 2)] [(c d) (values 3 4)])
+  (let-values/debug ([(a b) (values 1 2)] [(c d) (values 3 4)])
     (+ a b c d))]}
 
-@defform[(let*-values-debug ([(id ...) expr] ...) expr ...)]{
-Like @scheme[let-values-debug] but expands to a @scheme[let*-values] form.}
+@defform[(let*-values/debug ([(id ...) expr] ...) expr ...)]{
+Like @scheme[let-values/debug] but expands to a @scheme[let*-values] form.}
 
-@defform[(letrec-values-debug ([(id ...) expr] ...) expr ...)]{
-Like @scheme[letrec-values-debug] but expands to a @scheme[letrec-values] form.}
+@defform[(letrec-values/debug ([(id ...) expr] ...) expr ...)]{
+Like @scheme[letrec-values/debug] but expands to a @scheme[letrec-values] form.}
 
 @defform[(with-pretty-indent prefix expr ...)]{
 

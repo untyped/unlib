@@ -9,8 +9,10 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "added " (tt "define-library-aliases") " to " (tt "require.ss") ";")
-        (li "added documentation for " (tt "require.ss") "."))))
+    (ul (li "simplified the syntaxes produced by " (tt "define-library-aliases") ";")
+        (li "added " (tt "list-ref?") " to " (tt "list.ss") ";")
+        (li "added slash-style aliases for various " (tt "debug") " forms (" (tt "let/debug") " and so on; "
+            "the old hyphen-style aliases will be removed in a future version of Unlib)."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
