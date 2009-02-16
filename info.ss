@@ -12,7 +12,8 @@
     (ul (li "simplified the syntaxes produced by " (tt "define-library-aliases") ";")
         (li "added " (tt "list-ref?") " to " (tt "list.ss") ";")
         (li "added slash-style aliases for various " (tt "debug") " forms (" (tt "let/debug") " and so on; "
-            "the old hyphen-style aliases will be removed in a future version of Unlib)."))))
+            "the old hyphen-style aliases will be removed in a future version of Unlib);")
+        (li "documented forthcoming backwards-incompatible changes in Unlib 4."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
