@@ -64,6 +64,17 @@ The generator stops when the current value passes @scheme[end] in the direction 
   (gen)
   (gen)]}
 
+@defproc[(in-generator [gen (gen-> arg)]) (sequence? arg)]{
+
+Returns a sequence covering the values of a generator.
+
+@examples[
+  #:eval gen-eval
+  (define gen
+    (range->generator 1 5 2))
+  (for/list ([val (in-generator gen)])
+            val)]}
+
 @defproc[(generator-map [fn (arg1 arg2 ... -> ans)]
                         [gen1 (gen-> arg1)] 
                         [gen2 (gen-> arg2)] ...) (gen-> ans)]{

@@ -312,6 +312,27 @@
                     (set! nonkeys-accum null)))))
   loop)
 
+
+; generator -> sequence
+(define (in-generator g:items)
+  (make-do-sequence
+   ; current-position tracks the last value of the generator
+   (let ([current-position (g:items)])
+     (lambda ()
+       (values (lambda (pos)
+                 current-position)
+               (lambda (pos)
+                 (set! current-position (g:items))
+                 #t)
+               #t    ; position is irrelevant, so is always #t
+               (lambda (pos)
+                 (not (generator-end? current-position)))
+               (lambda (val)
+                 (not (generator-end? val)))
+               (lambda (pos val)
+                 (or (not (generator-end? current-position))
+                     (not (generator-end? val)))))))))
+
 ; Provide statements ---------------------------
 
 (provide gen->
@@ -333,4 +354,5 @@
                                    (and/c hash? dict-mutable?))]
  [list->generator             (-> (or/c pair? null?) procedure?)]
  [range->generator            (->* (integer?) ((or/c integer? false/c) integer?) procedure?)]
- [generator-project           (->* ((listof boolean?) procedure?) (procedure?) procedure?)]) 
+ [generator-project           (->* ((listof boolean?) procedure?) (procedure?) procedure?)]
+ [in-generator                (-> (gen-> any/c) sequence?)]) 

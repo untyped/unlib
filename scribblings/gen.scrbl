@@ -27,6 +27,10 @@ Shorter name for @scheme[list->generator].}
 
 Shorter name for @scheme[range->generator].}
 
+@defproc[(in-gen [gen (gen-> arg)]) (sequence? arg)]{
+
+Shorter name for @scheme[in-generator].}
+
 @defproc[(g:map [fn   (arg1 arg2 ... -> ans)]
                 [gen1 (gen-> arg1)] 
                 [gen2 (gen-> arg2)] ...) (gen-> ans)]{

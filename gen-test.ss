@@ -24,7 +24,8 @@
       g:debug
       g:for-each
       g:collect
-      g:collect/hash)))
+      g:collect/hash
+      in-gen)))
 
 ; Provide statements -----------------------------
 

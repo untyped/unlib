@@ -274,7 +274,35 @@
         (check-equal? (generate) 123 "check 2")
         (check-equal? (generate) (list "0" "1" (list (list "0" "0") (list "0" "1"))) "check 3")
         (check-equal? (generate) 456 "check 4")
-        (check-pred generator-end? (generate) "check 5")))))
+        (check-pred generator-end? (generate) "check 5")))
+    
+    (test-case "in-generator allows access to all and only elements of a list"
+      (let* ([lis                '(a b c d)]
+             [g:lis              (list->generator lis)]
+             [in-generatored-lis (for/list ([elem (in-generator g:lis)]) elem)])
+        (check-equal? lis in-generatored-lis
+                      (format "in-generator does not allow complete list access. Expected ~a; found ~a"
+                              lis in-generatored-lis))))
+    
+    (test-case "in-generator with shorter sequence allows access to all and only (truncated) elements of a list"
+      (let* ([lis                '(a b c d)]
+             [g:lis              (list->generator lis)]
+             [in-generatored-lis (for/list ([elem (in-generator g:lis)] 
+                                            [n    (in-range 0 2)])
+                                   elem)])
+        (check-equal? '(a b) in-generatored-lis
+                      (format "in-generator does not allow complete list access. Expected ~a; found ~a"
+                              '(a b) in-generatored-lis))))
+    
+    (test-case "in-generator with longer sequence allows access to all and only elements of a list"
+      (let* ([lis                '(a b c d)]
+             [g:lis              (list->generator lis)]
+             [in-generatored-lis (for/list ([elem (in-generator g:lis)] 
+                                            [n    (in-naturals)])
+                                   elem)])
+        (check-equal? lis in-generatored-lis
+                      (format "in-generator does not allow complete list access. Expected ~a; found ~a"
+                              lis in-generatored-lis))))))
 
 ; Provide statements -----------------------------
 

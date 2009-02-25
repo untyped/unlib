@@ -25,4 +25,5 @@
                                                               (and/c hash? dict-mutable?))]
  [rename list->generator             g:list              (-> list? procedure?)]
  [rename range->generator            g:range             (->* (integer?) ((or/c integer? false/c) integer?) procedure?)] 
- [rename generator-project           g:project           (->* ((listof boolean?) procedure?) (procedure?) procedure?)])
+ [rename generator-project           g:project           (->* ((listof boolean?) procedure?) (procedure?) procedure?)]
+ [rename in-generator                in-gen              (->  (gen-> any/c) sequence?)])
