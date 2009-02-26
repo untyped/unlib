@@ -14,6 +14,14 @@
       (bytes->string/utf-8 str)
       str))
 
+; natural -> contract
+(define (string-length/c num)
+  (flat-named-contract
+   (format "(string-length/c ~a)" num)
+   (lambda (item)
+     (and (string? item)
+          (<= (string-length item) num)))))
+
 ; (listof string) string [#:prefix string] [#:suffix string] -> string
 (define (string-delimit items delimiter #:prefix [prefix #f] #:suffix [suffix #f])
   (define delimited (string-join items delimiter))
@@ -56,5 +64,6 @@
 (provide/contract
  [string+false?    procedure?]
  [ensure-string    procedure?]
+ [string-length/c  (-> natural-number/c flat-contract?)]
  [string-delimit   (->* ((listof string?) string?) (#:prefix (or/c string? false/c) #:suffix (or/c string? false/c)) string?)]
  [string-ellipsify (->* (string?) (integer? string?) string?)])
