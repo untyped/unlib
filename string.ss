@@ -14,13 +14,22 @@
       (bytes->string/utf-8 str)
       str))
 
-; natural -> contract
-(define (string-length/c num)
-  (flat-named-contract
-   (format "(string-length/c ~a)" num)
-   (lambda (item)
-     (and (string? item)
-          (<= (string-length item) num)))))
+; natural [natural] -> contract
+(define string-length/c
+  (case-lambda
+    [(num)
+     (flat-named-contract
+      (format "(string-length/c ~a)" num)
+      (lambda (item)
+        (and (string? item)
+             (<= (string-length item) num))))]
+    [(min max)
+     (flat-named-contract
+      (format "(string-length/c ~a ~a)" min max)
+      (lambda (item)
+        (and (string? item)
+             (>= (string-length item) min)
+             (<= (string-length item) max))))]))
 
 ; (listof string) string [#:prefix string] [#:suffix string] -> string
 (define (string-delimit items delimiter #:prefix [prefix #f] #:suffix [suffix #f])

@@ -152,7 +152,7 @@
                           (if answer answer (ans))))))])
     ans))
 
-; (gen-> a) -> (gen-> a)
+; (gen-> a) [(a a -> boolean)] -> (gen-> a)
 (define generator-remove-duplicates
   (let ([empty (gensym)])
     (lambda (gen [same? equal?])

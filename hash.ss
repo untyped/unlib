@@ -34,11 +34,11 @@
 (define (hash-set? hash key)
   (and (hash-ref hash key #f) #t))
 
-; hash -> (listof any)
+; hash -> list
 (define (hash-keys hash)
   (hash-map hash (lambda (k v) k)))
 
-; hash -> (listof any)
+; hash -> list
 (define (hash-values hash)
   (hash-map hash (lambda (k v) v)))
 

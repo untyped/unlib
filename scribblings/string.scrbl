@@ -18,6 +18,10 @@ Returns @scheme[#t] if @scheme[item] is a string and @scheme[#f] otherwise.}
 
 Converts @scheme[bytes] arguments to @scheme[string]@schemeidfont{s}: passes all other arguments straight through.}
 
+@defproc*[([(string-length/c [max natural]) flat-contract?]
+           [(string-length/c [min natural] [max natural]) flat-contract?])]{
+Creates a contract that recognises strings with a length within the specified inclusive bounds.}
+
 @defproc[(string-delimit [items (listof string?)]
                          [delimiter string?]
                          [#:prefix prefix (U string? #f) #f]

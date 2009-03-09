@@ -56,6 +56,23 @@
   ; string
   (format "~a:~a:~a" source line column))
 
+; syntax -> boolean
+(define-values (dotted-identifier? split-dotted-identifier)
+  (let ([rx #rx"([^.][^.]*)[.](..*)"])
+    (values (lambda (stx)
+              (and (identifier? stx)
+                   (let ([str (symbol->string (syntax->datum stx))])
+                     (regexp-match rx str))
+                   #t))
+            (lambda (stx)
+              (if (dotted-identifier? stx)
+                  (let* ([str   (symbol->string (syntax->datum stx))]
+                         [match (regexp-match rx str)])
+                    (map (lambda (str)
+                           (datum->syntax stx (string->symbol str)))
+                         (cdr match)))
+                  (raise-syntax-error #f "expected dotted identifier" stx))))))
+
 ; Helpers ----------------------------------------
 
 ; (U string symbol number syntax) -> string
@@ -71,8 +88,10 @@
 (provide begin-for-syntax/any-order)
 
 (provide/contract
- [symbolic-identifier=?  (-> syntax? syntax? boolean?)]
- [make-id                (->* ((or/c syntax? false/c)) ()
-                              #:rest (listof (or/c string? symbol? number? syntax?))
-                              syntax?)]
- [syntax-location-string (-> syntax? string?)])
+ [symbolic-identifier=?   (-> syntax? syntax? boolean?)]
+ [make-id                 (->* ((or/c syntax? false/c)) ()
+                               #:rest (listof (or/c string? symbol? number? syntax?))
+                               syntax?)]
+ [syntax-location-string  (-> syntax? string?)]
+ [dotted-identifier?      (-> syntax? boolean?)]
+ [split-dotted-identifier (-> syntax? (list/c syntax? syntax?))])
