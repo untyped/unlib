@@ -118,7 +118,7 @@
     [else (raise-exn exn:fail:contract
             (format "Month out of range: ~a" month))]))
 
-; integer [integer] -> string
+; integer [integer] [#:format string] -> string
 ;
 ; Takes an integer seconds value (like the value returned by current-seconds) and,
 ; optionally, a second argument representing the current seconds, and returns a string like:
@@ -127,14 +127,14 @@
 ;   n minute(s) ago
 ;   n hour(s) ago
 ;   n day(s) ago
-(define (seconds->ago-string then [now (current-seconds)])
+(define (seconds->ago-string then [now (current-seconds)] #:format [format-string "~a ~a ago"])
   ; (integer string -> string)
   (define (make-answer number unit)
     (if (= number 1)
         (if (equal? unit "day")
             "yesterday"
-            (format "~a ~a ago" number unit))
-        (format "~a ~as ago" number unit)))
+            (format format-string number unit))
+        (format format-string number (format "~as" unit))))
   ; integer
   (define difference (- now then))
   (when (< difference 0)
@@ -145,7 +145,7 @@
         [(< difference 86400) (make-answer (floor (/ difference 3600)) "hour")]
         [else                 (make-answer (floor (/ difference 86400)) "day")]))
 
-; (U time-tai time-utc) [(U time-tai time-utc)] -> string
+; (U time-tai time-utc) [(U time-tai time-utc)] [#:format string] -> string
 ; 
 ; Takes a time-tai or time-utc (and, optionally, another argument of the same type representing
 ; the current time) and returns a string like:
@@ -154,18 +154,11 @@
 ;   n minute(s) ago
 ;   n hour(s) ago
 ;   n day(s) ago
-(define time->ago-string
-  (case-lambda
-    [(then)
-     (let ([now (if (time-tai? then)
-                    (current-time time-tai)
-                    (current-time time-utc))])
-       (seconds->ago-string (time-second then) (time-second now)))]
-    [(then now)
-     (if (eq? (time-type then) (time-type now))
-         (seconds->ago-string (time-second then) (time-second now))
-         (raise-exn exn:fail:contract
-           (format "Arguments have different time types: ~a ~a" then now)))]))
+(define (time->ago-string then [now (current-time (time-type then))] #:format [format-string "~a ~a ago"])
+  (if (eq? (time-type then) (time-type now))
+      (seconds->ago-string (time-second then) (time-second now) #:format format-string)
+      (raise-exn exn:fail:contract
+        (format "Arguments have different time types: ~a ~a" then now))))
 
 ; -> integer
 ; Returns the time zone offset of the current locale in seconds.
@@ -200,14 +193,14 @@
 
 (provide/contract
  [copy-date                (->* (date?)
-                                (#:nanosecond (or/c (integer-in 0 999999999) false/c)
-                                              #:second      (or/c (integer-in 0 59) false/c)
-                                              #:minute      (or/c (integer-in 0 59) false/c)
-                                              #:hour        (or/c (integer-in 0 23) false/c)
-                                              #:day         (or/c (integer-in 1 31) false/c)
-                                              #:month       (or/c (integer-in 1 12) false/c)
-                                              #:year        (or/c integer? false/c)
-                                              #:zone-offset (or/c (integer-in min-zone-offset max-zone-offset) false/c))
+                                (#:nanosecond (or/c (integer-in 0 999999999) #f)
+                                              #:second      (or/c (integer-in 0 59) #f)
+                                              #:minute      (or/c (integer-in 0 59) #f)
+                                              #:hour        (or/c (integer-in 0 23) #f)
+                                              #:day         (or/c (integer-in 1 31) #f)
+                                              #:month       (or/c (integer-in 1 12) #f)
+                                              #:year        (or/c integer? #f)
+                                              #:zone-offset (or/c (integer-in min-zone-offset max-zone-offset) #f))
                                 date?)]
  [time->date               (-> time/c date?)]
  [time-tai?                procedure?]
@@ -218,7 +211,7 @@
  [date-week-day?           (-> date? boolean?)]
  [leap-year?               (-> integer? boolean?)]
  [days-in-month            (->* (month/c) (integer?) integer?)]
- [seconds->ago-string      (->* (integer?) (integer?) string?)]
- [time->ago-string         (->* (time/c) (time/c) string?)]
+ [seconds->ago-string      (->* (integer?) (integer? #:format string?) string?)]
+ [time->ago-string         (->* (time/c) (time/c #:format string?) string?)]
  [current-time-zone-offset (-> integer?)]
  [current-year             (-> integer?)])

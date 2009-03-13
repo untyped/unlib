@@ -130,7 +130,9 @@
         (check-equal? (seconds->ago-string (- test-timestamp 3600) test-timestamp) "1 hour ago")
         (check-equal? (seconds->ago-string (- test-timestamp 86399) test-timestamp) "23 hours ago")
         (check-equal? (seconds->ago-string (- test-timestamp 86400) test-timestamp) "yesterday")
-        (check-equal? (seconds->ago-string (- test-timestamp 172800) test-timestamp) "2 days ago")))
+        (check-equal? (seconds->ago-string (- test-timestamp 172800) test-timestamp) "2 days ago")
+        (check-equal? (seconds->ago-string (- test-timestamp 172800) test-timestamp #:format "~a ~a old") "2 days old")
+        (check-equal? (seconds->ago-string (- test-timestamp 86400) test-timestamp #:format "~a ~a old") "yesterday")))
     
     (test-case "time->ago-string"
       (let ([test-timestamp (current-seconds)])
@@ -149,7 +151,13 @@
                                    (make-time time-type 0 (- test-timestamp 3600))
                                    (make-time time-type 0 test-timestamp))
                                   "1 hour ago"
-                                  (format "check 3, type ~a" time-type)))
+                                  (format "check 3, type ~a" time-type))
+                    (check-equal? (time->ago-string 
+                                   (make-time time-type 0 (- test-timestamp 3600))
+                                   (make-time time-type 0 test-timestamp)
+                                   #:format "~a ~a old")
+                                  "1 hour old"
+                                  (format "check 4, type ~a" time-type)))
                   (list time-tai time-utc))))
     
     (test-case "time->ago-string : mixture of time-tai and time-utc"
