@@ -25,6 +25,7 @@
          "profile-test.ss"
          "string-test.ss"
          "symbol-test.ss"
+         "syntax-test.ss"
          "test-base.ss"
          "time-test.ss"
          "trace-test.ss"
@@ -60,6 +61,7 @@
     project-tests
     string-tests
     symbol-tests
+    syntax-tests
     time-tests
     trace-tests
     url-tests

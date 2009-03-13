@@ -9,7 +9,8 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "added " (tt "string-length/c") "."))))
+    (ul (li "added " (tt "dotted-identifier?") ", " (tt "simple-dotted-identifier?") ", "
+            (tt "dotted-identifier-count") " and " (tt "dotted-identifier-split") "."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))

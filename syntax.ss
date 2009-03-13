@@ -2,7 +2,8 @@
 
 (require (for-syntax scheme/base)
          scheme/contract
-         scheme/match)
+         scheme/match
+         srfi/26)
 
 ; syntax syntax -> boolean
 (define (symbolic-identifier=? id1 id2)
@@ -57,20 +58,39 @@
   (format "~a:~a:~a" source line column))
 
 ; syntax -> boolean
-(define-values (dotted-identifier? split-dotted-identifier)
-  (let ([rx #rx"([^.][^.]*)[.](..*)"])
-    (values (lambda (stx)
+; syntax -> natural
+; syntax -> (listof syntax)
+(define-values (dotted-identifier?
+                simple-dotted-identifier?
+                dotted-identifier-count
+                dotted-identifier-split)
+  (letrec ([split (lambda (str)
+                    (match (regexp-match #px"([^.]*)([.](.*))?" str)
+                      [(list all first rest/dot rest)
+                       (if (and first rest)
+                           (cons first (split rest))
+                           (list first))]
+                      [#f (error "dang")]))])
+    (values (lambda (stx [min-count 2] [max-count #f])
               (and (identifier? stx)
-                   (let ([str (symbol->string (syntax->datum stx))])
-                     (regexp-match rx str))
-                   #t))
+                   (let ([count (length (split (symbol->string (syntax->datum stx))))])
+                     (and (or (not min-count) (>= count min-count))
+                          (or (not max-count) (<= count max-count))))))
+            (lambda (stx [min-count 2] [max-count #f])
+              (and (dotted-identifier? stx min-count max-count)
+                   (let ([parts (split (symbol->string (syntax->datum stx)))])
+                     (andmap (lambda (part)
+                               (not (string=? part "")))
+                             parts))))
             (lambda (stx)
-              (if (dotted-identifier? stx)
-                  (let* ([str   (symbol->string (syntax->datum stx))]
-                         [match (regexp-match rx str)])
-                    (map (lambda (str)
-                           (datum->syntax stx (string->symbol str)))
-                         (cdr match)))
+              (if (identifier? stx)
+                  (length (split (symbol->string (syntax->datum stx))))
+                  (raise-syntax-error #f "expected identifier" stx)))
+            (lambda (stx)
+              (if (identifier? stx)
+                  (map (lambda (str)
+                         (datum->syntax stx (string->symbol str)))
+                       (split (symbol->string (syntax->datum stx))))
                   (raise-syntax-error #f "expected dotted identifier" stx))))))
 
 ; Helpers ----------------------------------------
@@ -88,10 +108,12 @@
 (provide begin-for-syntax/any-order)
 
 (provide/contract
- [symbolic-identifier=?   (-> syntax? syntax? boolean?)]
- [make-id                 (->* ((or/c syntax? false/c)) ()
-                               #:rest (listof (or/c string? symbol? number? syntax?))
-                               syntax?)]
- [syntax-location-string  (-> syntax? string?)]
- [dotted-identifier?      (-> syntax? boolean?)]
- [split-dotted-identifier (-> syntax? (list/c syntax? syntax?))])
+ [symbolic-identifier=?     (-> syntax? syntax? boolean?)]
+ [make-id                   (->* ((or/c syntax? false/c)) ()
+                                 #:rest (listof (or/c string? symbol? number? syntax?))
+                                 syntax?)]
+ [syntax-location-string    (-> syntax? string?)]
+ [dotted-identifier?        (->* (syntax?) ((or/c natural-number/c #f) (or/c natural-number/c #f)) boolean?)]
+ [simple-dotted-identifier? (->* (syntax?) ((or/c natural-number/c #f) (or/c natural-number/c #f)) boolean?)]
+ [dotted-identifier-count   (-> syntax? natural-number/c)]
+ [dotted-identifier-split   (-> syntax? (listof syntax?))])
