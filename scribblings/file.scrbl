@@ -90,4 +90,17 @@ The @scheme[order] argument specifies whether the directory tree should be trave
                        [#:follow-links? follow-links? boolean? #t]) sequence?]{
 A wrapper for @scheme[directory-tree] that returns a sequence that is compatible with @scheme[for] and its equivalents.}
 
+@defproc[(file-pretty-size [file (U path? string?)]) string?]{
+Returns the size of @scheme[file], formatted in a humane way. See @scheme[perttify-file-size] for examples.}
+
+@defproc[(prettify-file-size [size natural?]) string?]{
+Like @scheme[file-pretty-size] but takes the @scheme[size] of the file as an integer.
+
+@examples[
+  #:eval file-eval
+  (prettify-file-size 500)
+  (prettify-file-size (* 500 1024))
+  (prettify-file-size (* 1000 1024))
+  (prettify-file-size (* 100 1024 1024 1024))]}
+
 } @;{end defmodule}

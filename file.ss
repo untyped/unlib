@@ -6,7 +6,8 @@
          scheme/port
          (except-in srfi/1 any)
          srfi/13
-         "base.ss")
+         "base.ss"
+         "debug.ss")
 
 ; path path -> boolean
 ;
@@ -202,6 +203,36 @@
       [[ids (_ args ...)]
        #'[ids (in-list (directory-tree args ...))]])))
 
+; path -> string
+(define (file-pretty-size path)
+  (prettify-file-size (file-size path)))
+
+; natural -> string
+(define (prettify-file-size size [unit 1])
+  
+  ; number -> string
+  (define unit->string
+    (match-lambda
+      [1 "bytes"]
+      [2 "KB"]
+      [3 "MB"]
+      [4 "GB"]
+      [5 "TB"]))
+  
+  (cond [(and (>= size 1000) (< unit 5))
+         (prettify-file-size (/ size 1024) (add1 unit))]
+        [(> size 10)
+         (let ([size (floor size)])
+           (format "~a ~a" size (unit->string unit)))]
+        [(and (= size 1) (= unit 1)) "1 byte"]
+        [else (let ([whole    (floor size)]
+                    [fraction (floor (remainder (floor (* size 10)) 10))])
+                (if (zero? fraction)
+                    (format "~a ~a" whole (unit->string unit))
+                    (format "~a.~a ~a" whole fraction (unit->string unit))))]))
+
+
+
 ; Provide statements -----------------------------
 
 (provide in-directory)
@@ -217,6 +248,7 @@
                                      (#:order (symbols 'pre 'post)
                                               #:filter (-> path? boolean?)
                                               #:follow-links? boolean?)
-                                    (listof path?))])
-                                
-                                
+                                     (listof path?))]
+ [file-pretty-size              (-> path? string?)]
+ [prettify-file-size            (-> natural-number/c string?)])
+

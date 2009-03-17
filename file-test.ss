@@ -223,7 +223,26 @@
                                         #:filter (lambda (path)
                                                    (and (regexp-match #px"txt$" (path->string path)) #t)))])
                         (path->string path))
-                      (list "dtt/a/b.txt" "dtt/d/e.txt"))))))
+                      (list "dtt/a/b.txt" "dtt/d/e.txt")))
+      
+      (test-case "prettify-file-size"
+        (check-equal? (prettify-file-size 0)                            "0 bytes")
+        (check-equal? (prettify-file-size 1)                            "1 byte")
+        (check-equal? (prettify-file-size 2)                            "2 bytes")
+        (check-equal? (prettify-file-size 512)                          "512 bytes")
+        (check-equal? (prettify-file-size 1000)                         "0.9 KB")
+        (check-equal? (prettify-file-size 1024)                         "1 KB")
+        (check-equal? (prettify-file-size 1950)                         "1.9 KB")
+        (check-equal? (prettify-file-size 19500)                        "19 KB")
+        (check-equal? (prettify-file-size (* 1024 512))                 "512 KB")
+        (check-equal? (prettify-file-size (* 1024 1000))                "0.9 MB")
+        (check-equal? (prettify-file-size (* 1024 1024))                "1 MB")
+        (check-equal? (prettify-file-size (* 1024 1024 1000))           "0.9 GB")
+        (check-equal? (prettify-file-size (* 1024 1024 1024))           "1 GB")
+        (check-equal? (prettify-file-size (* 1024 1024 1024 1000))      "0.9 TB")
+        (check-equal? (prettify-file-size (* 1024 1024 1024 1024))      "1 TB")
+        (check-equal? (prettify-file-size (* 1024 1024 1024 1024 1000)) "1000 TB")
+        (check-equal? (prettify-file-size (* 1024 1024 1024 1024 1024)) "1024 TB")))))
 
 ; Helpers ----------------------------------------
 
