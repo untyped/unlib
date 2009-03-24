@@ -5,6 +5,7 @@
          "cache-internal-test.ss"
          "convert-test.ss"
          "contract-test.ss"
+         "crc-test.ss"
          "debug-test.ss"
          "enum-test.ss"
          "exn-test.ss"
@@ -41,6 +42,7 @@
     cache-internal-tests
     contract-tests
     convert-tests
+    crc-tests
     debug-tests
     enum-tests
     exn-tests

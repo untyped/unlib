@@ -13,7 +13,8 @@
             (tt "dotted-identifier-count") " and " (tt "dotted-identifier-split") ".")
         (li "added optional " (tt "#:format") " argument to control the text formatting in "
             (tt "time->ago-string") " and " (tt "seconds->ago-string") ";")
-        (li "added " (tt "file-pretty-size") " and " (tt "prettify-file-size") ";"))))
+        (li "added " (tt "file-pretty-size") " and " (tt "prettify-file-size") ";")
+        (li "added " (tt "crc.ss") " and " (tt "crc32") "."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))

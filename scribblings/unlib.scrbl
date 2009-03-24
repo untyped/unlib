@@ -40,6 +40,7 @@ Unlib 3.x contains some legacy code that will be removed in Unlib 4.x. In most c
 @include-section{bytes.scrbl}
 @include-section{cache.scrbl}
 @include-section{contract.scrbl}
+@include-section{crc.scrbl}
 @include-section{debug.scrbl}
 @include-section{enum.scrbl}
 @include-section{exn.scrbl}
