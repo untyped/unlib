@@ -1,7 +1,8 @@
 #lang scheme/base
 
-(require srfi/13
-         "base.ss")
+(require scheme/contract
+         srfi/13
+         #;"base.ss")
 
 ; (struct symbol integer)
 (define-struct timer (name [value #:mutable]) 

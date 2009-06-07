@@ -1,7 +1,8 @@
 #lang scheme/base
 
-(require "base.ss"
-         "number.ss"
+(require scheme/contract
+         #;"base.ss"
+         #;"number.ss"
          "profile-internal.ss")
 
 ; Split time -------------------------------------

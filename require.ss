@@ -5,10 +5,15 @@
                      scheme/provide-transform
                      scheme/require-transform
                      srfi/26
+                     "profile.ss"
                      "require-internal.ss"
                      "syntax.ss")
          scheme/require-syntax
+         "profile.ss"
          (for-template scheme/base))
+
+(begin-for-syntax
+  (define-timer alias-timer))
 
 ; (_ string)
 (define-require-syntax directory-in
