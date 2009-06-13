@@ -110,6 +110,29 @@
       (pair? lis)
       (and (pair? lis) (list-ref? (cdr lis) (sub1 index)))))
 
+; list list [any any -> boolean] -> list list list
+(define (list-diff a b [same? equal?])
+  (define (in-a? b)
+    (ormap (lambda (a) (same? a b)) a))
+  (define (in-b? a)
+    (ormap (lambda (b) (same? a b)) b))
+  (define-values (a-only shared)
+    (for/fold ([only-accum null] [shared-accum null])
+               ([a (in-list a)])
+               (if (in-b? a)
+                   (values only-accum
+                           (cons a shared-accum))
+                   (values (cons a only-accum)
+                           shared-accum))))
+  (define-values (b-only)
+    (for/fold ([only-accum null])
+               ([b (in-list b)])
+               (if (in-a? b)
+                   only-accum
+                   (cons b only-accum))))
+  (values (reverse a-only)
+          (reverse b-only)
+          (reverse shared)))
 
 ;  (listof any1)
 ;  (listof any2)
@@ -294,6 +317,7 @@
  [list-pad            (->* (qlist/c integer?) (any/c) any)]
  [list-pad-right      (->* (qlist/c integer?) (any/c) any)]
  [list-ref?           (-> qlist/c natural? any)]
+ [list-diff           (->* (qlist/c qlist/c) (procedure?) (values qlist/c qlist/c qlist/c))]
  [assoc-value         (-> any/c qlist/c any)]
  [assoc-value/default (-> any/c qlist/c any/c any)]
  [alist-set           (->* (any/c any/c qlist/c) (procedure?) any)]

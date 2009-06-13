@@ -74,6 +74,27 @@
       (check-false (list-ref? '(a b c) 3) "unreferenceable element index found")
       (check-exn exn:fail:contract? (lambda () (list-ref? '(a b c) -1)) "non-natural index raises contract exception"))
     
+    (test-case "list-diff"
+      (let-values ([(a-only b-only shared)
+                    (list-diff (list 1 2 3 5 7 11)
+                               (list 1 3 5 7 9))])
+        (check-equal? a-only (list 2 11))
+        (check-equal? b-only (list 9))
+        (check-equal? shared (list 1 3 5 7)))
+      (let-values ([(a-only b-only shared)
+                    (list-diff (list "1" "2" "3" "5" "7" "11")
+                               (list "1" "3" "5" "7" "9"))])
+        (check-equal? a-only (list "2" "11"))
+        (check-equal? b-only (list "9"))
+        (check-equal? shared (list "1" "3" "5" "7")))
+      (let-values ([(a-only b-only shared)
+                    (list-diff (list "1" "2" "3" "5" "7" "11")
+                               (list "1" "3" "5" "7" "9")
+                               eq?)])
+        (check-equal? a-only (list "1" "2" "3" "5" "7" "11"))
+        (check-equal? b-only (list "1" "3" "5" "7" "9"))
+        (check-equal? shared null)))
+    
     (test-case "merge-sorted-lists"
       (check-equal? (merge-sorted-lists '(1 3 5 7 9) '(2 4 6 8 10) = <) '(1 2 3 4 5 6 7 8 9 10) "no duplicates")
       (check-equal? (merge-sorted-lists '(1 2 3 4 5) '(3 4 5 6 7)  = <) '(1 2 3 4 5 6 7)        "duplicates")
@@ -190,9 +211,7 @@
                                  '((b . 4) (c . 5) (d . 6))
                                  'second)
                     '((a . 1) (b . 4) (c . 5) (d . 6))
-                    "prefer second"))
-    
-    ))
+                    "prefer second"))))
 
 ; Provide statements -----------------------------
 

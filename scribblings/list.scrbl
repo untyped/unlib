@@ -90,6 +90,22 @@ Returns @scheme[#t] if @scheme[lis] contains @scheme[n] or more items.
   (list-ref? '(1 2 3) 0)
   (list-ref? '(1 2 3) 3)]}
 
+@defproc[(list-diff [a list?] [b list?] [same? (any any -> boolean?) equal?]) (values list? list? list?)]{
+Compares members of @scheme[a] and @scheme[b] using @scheme[same?] and returns three lists:
+
+@itemize{
+  @item{members of @scheme[a] that aren't in @scheme[b];}
+  @item{members of @scheme[b] that aren't in @scheme[a];}
+  @item{members that are in @scheme[a] and @scheme[b].}}
+
+@examples[
+  #:eval list-eval
+  (call-with-values
+   (lambda ()
+     (list-diff (list 1 2 3 5 7 11)
+                (list 1 3 5 7 9)))
+   list)]}
+
 @defproc[(merge-sorted-lists [list1 list?]
                              [list2 list?]
                              [same? (any any -> boolean?)]
