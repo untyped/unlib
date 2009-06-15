@@ -46,6 +46,7 @@
     crc-tests
     debug-tests
     enum-tests
+    enumeration-tests
     exn-tests
     file-tests
     generator-tests

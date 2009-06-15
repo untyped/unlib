@@ -27,6 +27,10 @@
 (define (enum-value? enum value)
   (and (memq value (enum-values enum)) #t))
 
+; enum any -> boolean
+(define (enum-value+false? enum value)
+  (or (not value) (enum-value? enum value)))
+
 ; enum any [(U any (-> any))] -> (U string #f)
 (define (enum-prettify
          enum
@@ -124,4 +128,5 @@
  [enum->string        (->* (enum?) (string?) string?)]
  [enum->pretty-string (->* (enum?) (string?) string?)]
  [enum-value?         (-> enum? any/c boolean?)]
+ [enum-value+false?   (-> enum? any/c boolean?)]
  [enum-prettify       (->* (enum? any/c) ((or/c string? (-> string?))) string?)])

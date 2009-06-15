@@ -49,6 +49,12 @@
       (check-false (enum-value? option 'b))
       (check-false (enum-value? option 'c)))
     
+    (test-case "enum-value+false?"
+      (check-true  (enum-value? vehicle (vehicle car)))
+      (check-false (enum-value? vehicle #f))
+      (check-true  (enum-value+false? vehicle (vehicle car)))
+      (check-true  (enum-value+false? vehicle #f)))
+    
     (test-case "enum->[pretty-]string with separator specified"
       (check-equal? (enum->string vehicle ":") "car:boat:plane")
       (check-equal? (enum->pretty-string vehicle ":") "car:boat:plane"))))
