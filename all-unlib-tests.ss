@@ -8,6 +8,7 @@
          "crc-test.ss"
          "debug-test.ss"
          "enum-test.ss"
+         "enumeration-test.ss"
          "exn-test.ss"
          "file-test.ss"
          "generator-test.ss"
