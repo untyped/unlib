@@ -25,6 +25,7 @@ Unlib 3.x contains some legacy code that will be removed in Unlib 4.x. In most c
   @item{the @filepath{cache-mzscheme.ss} module has been replaced with @filepath{cache.ss} and will be removed;}
   @item{the @filepath{string-mzscheme.ss} module has been replaced with @filepath{string.ss} and will be removed;}
   @item{the @filepath{time-mzscheme.ss} module has been replaced with @filepath{time.ss} and will be removed;}
+  @item{the @filepath{enum.ss} module has been replaced with @filepath{enumeration.ss} and will be removed;}
   @item{@scheme[define-debug] has been replaced with @scheme[define/debug] and will be removed;}
   @item{@scheme[define-values-debug] has been replaced with @scheme[define-values/debug] and will be removed;}
   @item{@scheme[let-debug] has been replaced with @scheme[let/debug] and will be removed;}
