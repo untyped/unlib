@@ -16,7 +16,7 @@
     (define (raise-enum-syntax-error [sub-stx stx])
       (raise-syntax-error
        #f
-       (format "bad enum syntax; possible values are: ~a"
+       (format "bad enumeration syntax; possible values are: ~a"
                (map syntax->datum (enum-info-value-ids info)))
        stx
        sub-stx))
@@ -56,7 +56,7 @@
 
 ; identifier -> enum-info
 (define (enum-info-ref id)
-  (with-handlers ([exn? (lambda (exn) (raise-syntax-error #f "not an enum identifier" id))])
+  (with-handlers ([exn? (lambda (exn) (raise-syntax-error #f "not an unlib enumeration" id))])
     (module-identifier-mapping-get info-cache id)))
 
 ; Provide statements -----------------------------

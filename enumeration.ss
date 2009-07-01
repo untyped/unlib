@@ -1,12 +1,15 @@
 #lang scheme/base
 
 (require (for-syntax scheme/base
+                     srfi/26
+                     "debug.ss"
                      "enumeration-info.ss"
                      "syntax.ss")
          scheme/provide-syntax
          scheme/string
          "base.ss"
-         "exn.ss")
+         "exn.ss"
+         "match.ss")
 
 ; Structure types --------------------------------
 
@@ -108,6 +111,73 @@
      (syntax/loc stx
        (list (enum-id val-id) ...))]))
 
+(define-syntax (enum-case complete-stx)
+  
+  ; enum-info syntax -> void
+  (define (check-cases info cases-stx)
+    (for ([case-stx (in-list (syntax->list cases-stx))])
+      (check-case info case-stx)))
+  
+  ; enum-info syntax -> void
+  (define (check-case info case-stx)
+    (let ([all-ids (map syntax->datum (enum-info-value-ids info))])
+      (unless (andmap identifier? (syntax->list case-stx))
+        (raise-syntax-error #f "bad clause syntax: expected (listof value-id)"
+                            complete-stx
+                            case-stx))
+      
+      (for ([id-stx (in-list (syntax->list case-stx))])
+        (unless (memq (syntax->datum id-stx) all-ids)
+          (raise-syntax-error #f "identifier not found in enum" complete-stx id-stx)))))
+  
+  ; enum-info (listof syntax) -> void
+  (define (check-completeness info cases-stx)
+    (let* ([case-stxs (syntax->list cases-stx)]
+           [all-ids   (map syntax->datum (enum-info-value-ids info))]
+           [used-ids  (map syntax->datum (apply append (map syntax->list case-stxs)))])
+      (for ([all-id (in-list all-ids)])
+        (unless (memq all-id used-ids)
+          (raise-syntax-error #f (format "case not covered by clauses: ~a" all-id)
+                              complete-stx)))))
+  
+  ; enum-info (listof syntax) -> void
+  (define (find-unused-ids info cases-stx)
+    (let* ([case-stxs (syntax->list cases-stx)]
+           [all-ids   (map syntax->datum (enum-info-value-ids info))]
+           [used-ids  (map syntax->datum (apply append (map syntax->list case-stxs)))])
+      (for/fold ([accum null])
+                ([all-id (in-list all-ids)])
+        (if (memq all-id used-ids)
+            accum
+            (cons all-id accum)))))
+  
+  (syntax-case* complete-stx (else) symbolic-identifier=?
+    
+    ; Expression has no 'else' clause:
+    [(_ enum-id id [(value-id ...) expr ...] ...)
+     (identifier? #'enum-id)
+     (let* ([info (enum-info-ref #'enum-id)])
+       (check-cases info #'((value-id ...) ...))
+       (check-completeness info #'((value-id ...) ...))
+       (syntax/loc complete-stx
+         (match id
+           [(or (eq? (enum-id value-id)) ...) expr ...] ...
+           [other (error (format "enum-case ~a: value not in enumeration" 'enum-id)
+                         other)])))]
+    
+    ; Expression has an 'else' clause:
+    [(_ enum-id id [(value-id ...) expr ...] ... [else else-expr ...])
+     (identifier? #'enum-id)
+     (let* ([info (enum-info-ref #'enum-id)])
+       (check-cases info #'((value-id ...) ...))
+       (with-syntax ([(unused-id ...) (find-unused-ids info #'((value-id ...) ...))])
+         (syntax/loc complete-stx
+           (match id
+             [(or (eq? (enum-id value-id)) ...) expr ...] ...
+             [(or (eq? (enum-id unused-id)) ...) else-expr ...]
+             [other (error (format "enum-case ~a: value not in enumeration" 'enum-id)
+                           other)]))))]))
+
 ; Helpers ----------------------------------------
 
 ; (U boolean symbol integer) -> string
@@ -119,7 +189,8 @@
 ; Provide statements -----------------------------
 
 (provide define-enum
-         enum-list)
+         enum-list
+         enum-case)
 
 (provide/contract
  [struct enum ([name          symbol?]

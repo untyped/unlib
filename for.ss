@@ -32,6 +32,29 @@
          (let-values ([(temp ...) (for/fold (accum ...) (seq ...) expr ...)])
            (reverse ans))))]))
 
+(define-syntax (for/filter stx)
+  (syntax-case stx ()
+    [(_ (seq ...) expr ...)
+     (with-syntax ([(accum ...) (generate-temporaries #'(seq ...))]
+                   [(ans   ...) (generate-temporaries #'(seq ...))])
+       (syntax/loc stx
+         (for/fold/reverse
+          ([accum null] ...)
+          (seq ...)
+          (let-values ([(ans ...) (begin expr ...)])
+            (if ans (cons ans accum) accum)
+            ...))))]))
+
+(define-syntax (for/filter1 stx)
+  (syntax-case stx ()
+    [(_ (seq ...) expr ...)
+     (syntax/loc stx
+       (for/fold1/reverse
+        ([accum null])
+        (seq ...)
+        (let ([ans (begin expr ...)])
+          (if ans (cons ans accum) accum))))]))
+
 (define-syntax (for/append stx)
   (syntax-case stx ()
     [(_ (seq ...) expr ...)
@@ -43,4 +66,6 @@
 (provide for/fold/reverse
          for/fold1
          for/fold1/reverse
-         for/append)
+         for/append
+         for/filter
+         for/filter1)

@@ -57,7 +57,21 @@
     
     (test-case "enum->[pretty-]string with separator specified"
       (check-equal? (enum->string vehicle ":") "car:boat:plane")
-      (check-equal? (enum->pretty-string vehicle ":") "car:boat:plane"))))
+      (check-equal? (enum->pretty-string vehicle ":") "car:boat:plane"))
+    
+    (test-case "enum-case"
+      (check-equal? (enum-case option 1 [(a) 10 100] [(b) 20 200] [(c) 30 300]) 100)
+      (check-equal? (enum-case option 2 [(a) 10 100] [(b) 20 200] [(c) 30 300]) 200)
+      (check-equal? (enum-case option 3 [(a) 10 100] [(b) 20 200] [(c) 30 300]) 300)
+      (check-exn exn:fail? (cut enum-case option 'a [(a) 100] [(b) 200] [(c) 300]))
+      (check-equal? (enum-case option 1 [(a) 10 100] [(b) 20 200] [else 30 300]) 100)
+      (check-equal? (enum-case option 2 [(a) 10 100] [(b) 20 200] [else 30 300]) 200)
+      (check-equal? (enum-case option 3 [(a) 10 100] [(b) 20 200] [else 30 300]) 300)
+      (check-exn exn:fail? (cut enum-case option 'a [(a) 100] [(b) 200] [else 300]))
+      (check-equal? (enum-case option 1 [(a) 10 100] [(b c) 20 200]) 100)
+      (check-equal? (enum-case option 2 [(a) 10 100] [(b c) 20 200]) 200)
+      (check-equal? (enum-case option 3 [(a) 10 100] [(b c) 20 200]) 200)
+      (check-exn exn:fail? (cut enum-case option 'a [(a) 100] [(b c) 200])))))
 
 ; Provide statements -----------------------------
 
