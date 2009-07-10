@@ -1,6 +1,8 @@
-#lang scheme
+#lang scheme/base
 
-(require srfi/26)
+(require scheme/match
+         srfi/26
+         "debug.ss")
 
 ; Match expanders --------------------------------
 

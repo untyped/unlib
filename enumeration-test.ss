@@ -8,10 +8,26 @@
 (define-enum vehicle
   (car boat plane))
 
+(define-enum number
+  ([one   1 "one"]
+   [two   2 "two"]
+   [three 3 "three"]))
+
 (define-enum option
   ([a 1 "item 1"]
    [b 2 "item 2"]
    [c 3 "item 3"]))
+
+(define-struct struct (val) #:transparent)
+
+(define a (make-struct 'a))
+(define b (make-struct 'b))
+(define c (make-struct 'c))
+
+(define-enum structs
+  ([one   a "one"]
+   [two   b "two"]
+   [three c "three"]))
 
 ; Tests ------------------------------------------
 
@@ -32,7 +48,7 @@
       (check-true (enum-value? vehicle 'boat))
       (check-true (enum-value? vehicle 'plane))
       (check-false (enum-value? vehicle 'lemon)))
-    
+        
     (test-case "option"
       (check-pred enum? option)
       (check-equal? (enum-values option) '(1 2 3))
@@ -49,6 +65,10 @@
       (check-false (enum-value? option 'b))
       (check-false (enum-value? option 'c)))
     
+    (test-case "structs"
+      (check-true (enum-value? structs a))
+      (check-false (enum-value? structs (make-struct 'a))))
+    
     (test-case "enum-value+false?"
       (check-true  (enum-value? vehicle (vehicle car)))
       (check-false (enum-value? vehicle #f))
@@ -64,14 +84,19 @@
       (check-equal? (enum-case option 2 [(a) 10 100] [(b) 20 200] [(c) 30 300]) 200)
       (check-equal? (enum-case option 3 [(a) 10 100] [(b) 20 200] [(c) 30 300]) 300)
       (check-exn exn:fail? (cut enum-case option 'a [(a) 100] [(b) 200] [(c) 300]))
+      
       (check-equal? (enum-case option 1 [(a) 10 100] [(b) 20 200] [else 30 300]) 100)
       (check-equal? (enum-case option 2 [(a) 10 100] [(b) 20 200] [else 30 300]) 200)
       (check-equal? (enum-case option 3 [(a) 10 100] [(b) 20 200] [else 30 300]) 300)
-      (check-exn exn:fail? (cut enum-case option 'a [(a) 100] [(b) 200] [else 300]))
+      (check-equal? (enum-case option 'a [(a) 100] [(b) 200] [else 300]) 300)
+      
       (check-equal? (enum-case option 1 [(a) 10 100] [(b c) 20 200]) 100)
       (check-equal? (enum-case option 2 [(a) 10 100] [(b c) 20 200]) 200)
       (check-equal? (enum-case option 3 [(a) 10 100] [(b c) 20 200]) 200)
-      (check-exn exn:fail? (cut enum-case option 'a [(a) 100] [(b c) 200])))))
+      (check-exn exn:fail? (cut enum-case option 'a [(a) 100] [(b c) 200]))
+      
+      (check-equal? (enum-case structs a [(one) 1] [(two) 2] [(three) 3] [else 4]) 1)
+      (check-equal? (enum-case structs (make-struct 'a) [(one) 1] [(two) 2] [(three) 3] [else 4]) 4))))
 
 ; Provide statements -----------------------------
 

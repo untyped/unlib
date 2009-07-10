@@ -87,7 +87,11 @@
             (make-enum
              'id
              (list value ...)
-             (list pretty ...)))
+             (list (let ([temp pretty])
+                     (if (string? temp)
+                         temp
+                         (raise-type-error 'define-enum "pretty value must be a string" pretty)))
+                   ...)))
           
           (define-syntaxes (id)
             (let ([certify (syntax-local-certifier #t)])
@@ -153,18 +157,6 @@
   
   (syntax-case* complete-stx (else) symbolic-identifier=?
     
-    ; Expression has no 'else' clause:
-    [(_ enum-id id [(value-id ...) expr ...] ...)
-     (identifier? #'enum-id)
-     (let* ([info (enum-info-ref #'enum-id)])
-       (check-cases info #'((value-id ...) ...))
-       (check-completeness info #'((value-id ...) ...))
-       (syntax/loc complete-stx
-         (match id
-           [(or (eq? (enum-id value-id)) ...) expr ...] ...
-           [other (error (format "enum-case ~a: value not in enumeration" 'enum-id)
-                         other)])))]
-    
     ; Expression has an 'else' clause:
     [(_ enum-id id [(value-id ...) expr ...] ... [else else-expr ...])
      (identifier? #'enum-id)
@@ -175,8 +167,19 @@
            (match id
              [(or (eq? (enum-id value-id)) ...) expr ...] ...
              [(or (eq? (enum-id unused-id)) ...) else-expr ...]
-             [other (error (format "enum-case ~a: value not in enumeration" 'enum-id)
-                           other)]))))]))
+             [other else-expr ...]))))]
+    
+    ; Expression has no 'else' clause:
+    [(_ enum-id id [(value-id ...) expr ...] ...)
+     (identifier? #'enum-id)
+     (let* ([info (enum-info-ref #'enum-id)])
+       (check-cases info #'((value-id ...) ...))
+       (check-completeness info #'((value-id ...) ...))
+       (syntax/loc complete-stx
+         (match id
+           [(or (eq? (enum-id value-id)) ...) expr ...] ...
+           [other (error (format "enum-case ~a: value not in enumeration" 'enum-id)
+                         other)])))]))
 
 ; Helpers ----------------------------------------
 

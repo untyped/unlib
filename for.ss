@@ -66,6 +66,6 @@
 (provide for/fold/reverse
          for/fold1
          for/fold1/reverse
-         for/append
          for/filter
-         for/filter1)
+         for/filter1
+         for/append)
