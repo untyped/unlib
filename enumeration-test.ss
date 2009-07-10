@@ -20,14 +20,10 @@
 
 (define-struct struct (val) #:transparent)
 
-(define a (make-struct 'a))
-(define b (make-struct 'b))
-(define c (make-struct 'c))
-
 (define-enum structs
-  ([one   a "one"]
-   [two   b "two"]
-   [three c "three"]))
+  ([one   (make-struct 'a) "one"]
+   [two   (make-struct 'b) "two"]
+   [three (make-struct 'c) "three"]))
 
 ; Tests ------------------------------------------
 
@@ -66,7 +62,7 @@
       (check-false (enum-value? option 'c)))
     
     (test-case "structs"
-      (check-true (enum-value? structs a))
+      (check-true (enum-value? structs (structs one)))
       (check-false (enum-value? structs (make-struct 'a))))
     
     (test-case "enum-value+false?"
@@ -95,7 +91,7 @@
       (check-equal? (enum-case option 3 [(a) 10 100] [(b c) 20 200]) 200)
       (check-exn exn:fail? (cut enum-case option 'a [(a) 100] [(b c) 200]))
       
-      (check-equal? (enum-case structs a [(one) 1] [(two) 2] [(three) 3] [else 4]) 1)
+      (check-equal? (enum-case structs (structs one) [(one) 1] [(two) 2] [(three) 3] [else 4]) 1)
       (check-equal? (enum-case structs (make-struct 'a) [(one) 1] [(two) 2] [(three) 3] [else 4]) 4))))
 
 ; Provide statements -----------------------------

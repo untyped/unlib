@@ -53,10 +53,10 @@
 ; (_ id (value-clause ...) keyword-arg ...)
 (define-syntax (define-enum complete-stx)
   
-  (define id-stx #f)          ; (U syntax #f)
-  (define value-id-stxs null) ; (listof syntax)
-  (define value-stxs null)    ; (listof syntax)
-  (define pretty-stxs null)   ; (listof syntax)
+  (define id-stx #f)            ; (U syntax #f)
+  (define value-id-stxs null)   ; (listof syntax)
+  (define value-expr-stxs null) ; (listof syntax)
+  (define pretty-stxs null)     ; (listof syntax)
   
   ; syntax syntax -> void
   (define (parse-values stx)
@@ -64,9 +64,9 @@
       [() (parse-finish)]
       [([id val str] other ...)
        (identifier? #'id)
-       (begin (set! value-id-stxs (cons #'id value-id-stxs))
-              (set! value-stxs    (cons #'val value-stxs))
-              (set! pretty-stxs   (cons #'str pretty-stxs))
+       (begin (set! value-id-stxs   (cons #'id value-id-stxs))
+              (set! value-expr-stxs (cons #'val value-expr-stxs))
+              (set! pretty-stxs     (cons #'str pretty-stxs))
               (parse-values #'(other ...)))]
       [([id str] other ...)
        (parse-values #'([id 'id str] other ...))]
@@ -77,16 +77,19 @@
        (parse-values #'([id] other ...))]))
   
   (define (parse-finish)
-    (with-syntax ([id             id-stx]
-                  [private-id     (make-id #f id-stx)]
-                  [(value-id ...) (reverse value-id-stxs)]
-                  [(value ...)    (reverse value-stxs)]
-                  [(pretty ...)   (reverse pretty-stxs)])
+    (with-syntax ([id                     id-stx]
+                  [private-id             (make-id #f id-stx)]
+                  [(value-id ...)         (reverse value-id-stxs)]
+                  [(value-private-id ...) (generate-temporaries (reverse value-id-stxs))]
+                  [(value ...)            (reverse value-expr-stxs)]
+                  [(pretty ...)           (reverse pretty-stxs)])
       #'(begin
+          (define value-private-id value) ...
+          
           (define private-id
             (make-enum
              'id
-             (list value ...)
+             (list value-private-id ...)
              (list (let ([temp pretty])
                      (if (string? temp)
                          temp
@@ -100,7 +103,7 @@
                 (certify #'id)
                 (certify #'private-id)
                 (list (certify #'value-id) ...)
-                (list (certify #'value) ...))))))))
+                (list (certify #'value-private-id) ...))))))))
   
   (syntax-case complete-stx ()
     [(_ id (value ...))
