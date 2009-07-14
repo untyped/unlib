@@ -81,7 +81,7 @@
     ; raising an exception if it is invalid:
     (and (>= month 1)            (<= month 12)
          (>= day 1)              (<= day (days-in-month month year))
-         (>= hour 0)             (< hour 24)
+         (>= hour 0)             (< hour   24)
          (>= minute 0)           (< minute 60)
          (>= second 0)           (< second 60)
          (>= nanosecond 0)       (< nanosecond 1000000000)
@@ -127,7 +127,7 @@
 ;   n minute(s) ago
 ;   n hour(s) ago
 ;   n day(s) ago
-(define (seconds->ago-string then [now (current-seconds)] #:format [format-string "~a ~a ago"])
+(define (seconds->ago-string then [now (current-seconds)] #:format [format-string "~a ~a ago"] #:short? [short? #f])
   ; (integer string -> string)
   (define (make-answer number unit)
     (if (= number 1)
@@ -140,9 +140,9 @@
   (when (< difference 0)
     (raise-exn exn:fail:contract
       (format "Expected first argument to be less than second, received ~a ~a." then now)))
-  (cond [(< difference 60)    (make-answer difference "second")]
-        [(< difference 3600)  (make-answer (floor (/ difference 60)) "minute")]
-        [(< difference 86400) (make-answer (floor (/ difference 3600)) "hour")]
+  (cond [(< difference 60)    (make-answer difference (if short? "sec" "second"))]
+        [(< difference 3600)  (make-answer (floor (/ difference 60)) (if short? "min" "minute"))]
+        [(< difference 86400) (make-answer (floor (/ difference 3600)) (if short? "hr" "hour"))]
         [else                 (make-answer (floor (/ difference 86400)) "day")]))
 
 ; (U time-tai time-utc) [(U time-tai time-utc)] [#:format string] -> string
@@ -154,9 +154,9 @@
 ;   n minute(s) ago
 ;   n hour(s) ago
 ;   n day(s) ago
-(define (time->ago-string then [now (current-time (time-type then))] #:format [format-string "~a ~a ago"])
+(define (time->ago-string then [now (current-time (time-type then))] #:format [format-string "~a ~a ago"] #:short? [short? #f])
   (if (eq? (time-type then) (time-type now))
-      (seconds->ago-string (time-second then) (time-second now) #:format format-string)
+      (seconds->ago-string (time-second then) (time-second now) #:format format-string #:short? short?)
       (raise-exn exn:fail:contract
         (format "Arguments have different time types: ~a ~a" then now))))
 
@@ -211,7 +211,7 @@
  [date-week-day?           (-> date? boolean?)]
  [leap-year?               (-> integer? boolean?)]
  [days-in-month            (->* (month/c) (integer?) integer?)]
- [seconds->ago-string      (->* (integer?) (integer? #:format string?) string?)]
- [time->ago-string         (->* (time/c) (time/c #:format string?) string?)]
+ [seconds->ago-string      (->* (integer?) (integer? #:format string? #:short? boolean?) string?)]
+ [time->ago-string         (->* (time/c) (time/c #:format string? #:short? boolean?) string?)]
  [current-time-zone-offset (-> integer?)]
  [current-year             (-> integer?)])

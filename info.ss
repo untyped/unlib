@@ -10,7 +10,8 @@
 (define release-notes
   '((p "Changes and additions:")
     (ul (li "added " (tt "list-diff") " to " (tt "list.ss") ";")
-        (li "added " (tt "enum-case") " to " (tt "enumeration.ss") "."))))
+        (li "added " (tt "enum-case") " to " (tt "enumeration.ss") ";")
+        (li "added optional " (tt "#:short?") " argument to " (tt "time->ago-string") " and " (tt "seconds->ago-string") "."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))

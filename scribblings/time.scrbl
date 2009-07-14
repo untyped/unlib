@@ -65,12 +65,15 @@ Returns @scheme[#t] if @scheme[date] is a Monday, Tuesday, Wednesday or Friday.}
 
 @defproc[(time->ago-string [then (U time-tai time-utc)]
                            [now (U time-tai time-utc) (current-time (time-type then))]
-                           [#:format format-string string? "~a ~a ago"]) string?]{
+                           [#:format format-string string? "~a ~a ago"]
+                           [#:short? boolean? #f]) string?]{
 Given the time of an event the past (and, optionally, another argument representing the current time), returns a textual description of the time passed since the event. Raises exn:fail:unlib if @scheme[now] is before @scheme[then]. See @scheme[seconds->ago-string] for examples.
 
-The optional @scheme[format-string] should have two wildcards in it: one for the number (1, 2, 59) and one for the unit (seconds, minutes, days). The format string is ignored if the result is @scheme["yesterday"].}
+The optional @scheme[format-string] argument should have two wildcards in it: one for the number (1, 2, 59) and one for the unit (seconds, minutes, days). The format string is ignored if the result is @scheme["yesterday"].
 
-@defproc[(seconds->ago-string [secs integer?] [now integer? (current-seconds)] [#:format format-string string? "~a ~a ago"]) string?]{
+The optional @scheme[short?] argument can be set to @scheme[#t] to use abbreviated time units (such as @scheme["min"] rather than @scheme["minute"]).}
+
+@defproc[(seconds->ago-string [secs integer?] [now integer? (current-seconds)] [#:format format-string string? "~a ~a ago"] [#:short? boolean? #f]) string?]{
 
 Like @scheme[time->ago-string] but @scheme[then] and @scheme[now] are integer values like those output by @scheme[current-seconds].
 
