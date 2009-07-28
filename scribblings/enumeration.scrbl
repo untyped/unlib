@@ -2,11 +2,11 @@
 
 @(require (file "base.ss"))
 
-@title[#:tag "enum"]{Enumerations (deprecated)}
+@title[#:tag "enumeration"]{Enumerations (revised)}
 
-@(define-eval enum-eval (planet untyped/unlib/enum))
+@(define-eval enum-eval (planet untyped/unlib/enumeration))
 
-@defmodule[(planet untyped/unlib/enum)]{
+@defmodule[(planet untyped/unlib/enumeration)]{
 
 Utilities for defining simple enumerations of booleans, symbols and integers. These are useful wherever you would normally use a small collection of literals to represent possible values of a variable, and test for value equality with @scheme[eq?]. The @scheme[define-enum] form binds the literals to Scheme identifiers so the compiler catches typos that might otherwise take a long time to debug.
 
@@ -57,32 +57,47 @@ Returns the pretty equivalent of @scheme[value]. If @scheme[value] is not found 
                [value-expr   (U boolean? symbol? integer?)]
                [pretty-expr  string?]
                [keyword-arg (code:line #:plural id)])]{
-Binds the following identifiers:
+Binds @scheme[enum-id] to an identifier macro that can be used:
 
 @itemize{
-  @item{@scheme[enum-id]: an enumeration struct;}  
-  @item{@scheme[value-id] (one binding per value): the values of the enumeration, each a symbol;}
-  @item{@scheme[enum-id]@schemeidfont{?}: a predicate that recognises the values;}
-  @item{@scheme[enum-id]@schemeidfont{-out}: a provide form that provides all of the above.}}
-
-If @scheme[value-expr] and @scheme[pretty-expr] are unspecified for a value, they are created from @scheme[value-id].
- 
-@examples[
-  #:eval enum-eval
-  (define-enum vehicle (car boat plane))
-  car
-  boat
-  plane
-  (vehicle? car)
-  (vehicle? 'apple)]
-
-The optional @scheme[#:prefix] argument affects the names of the value identifiers (@scheme[car], @scheme[boat] and so on) bound by the macro:
+  @item{in argument position to refer to an @scheme[enum] struct;}
+  @item{in procedure call position to retrieve a value from the enumeration.}}
 
 @examples[
   #:eval enum-eval
-  (define-enum vehicle (car boat plane) #:prefix vehicle-)
-  vehicle-car
-  vehicle-boat
-  vehicle-plane]}
+  (define-enum options
+    ([a 'option1 "first option"]
+     [b "second option"]
+     c))
+  (options a)
+  (options b)
+  (options c)
+  (map (lambda (val)
+         (enum-prettify options val))
+       (list (options a) (options b) (options c)))]}
+  
+@defform[(enum-list enum value ...)]{
+Expands to a @scheme[list] of @scheme[value]@schemeidfont{s} from @scheme[enum].
+
+@examples[
+  #:eval enum-eval
+  (define-enum vehicles (car boat plane))
+  (enum-list vehicles car boat)]}
+
+@defform/subs[#:literals (else) (enum-case enum value clause ...)
+              ([clause [(value ...) expr ...]
+                       [else expr ...]])]{
+Like @scheme[case] but each @scheme[value] must be a value from @scheme[enum]. If an @scheme[else] expression is not provided, the @scheme[value]@schemeidfont{s} must cover the complete enumeration.
+
+
+@examples[
+  #:eval enum-eval
+  (define-enum vehicles (car boat plane))
+  (define (flies? vehicle)
+    (enum-case vehicles vehicle
+      [(plane) #t]
+      [(car boat) #f]))
+  (flies? 'car)
+  (flies? 'plane)]}
 
 } @;{end defmodule}

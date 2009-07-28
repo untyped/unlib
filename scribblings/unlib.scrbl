@@ -44,8 +44,10 @@ Unlib 3.x contains some legacy code that will be removed in Unlib 4.x. In most c
 @include-section{crc.scrbl}
 @include-section{debug.scrbl}
 @include-section{enum.scrbl}
+@include-section{enumeration.scrbl}
 @include-section{exn.scrbl}
 @include-section{file.scrbl}
+@include-section{for.scrbl}
 @include-section{generator.scrbl}
 @include-section{gen.scrbl}
 @include-section{hash.scrbl}

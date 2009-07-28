@@ -45,16 +45,6 @@
             (if ans (cons ans accum) accum)
             ...))))]))
 
-(define-syntax (for/filter1 stx)
-  (syntax-case stx ()
-    [(_ (seq ...) expr ...)
-     (syntax/loc stx
-       (for/fold1/reverse
-        ([accum null])
-        (seq ...)
-        (let ([ans (begin expr ...)])
-          (if ans (cons ans accum) accum))))]))
-
 (define-syntax (for/append stx)
   (syntax-case stx ()
     [(_ (seq ...) expr ...)
@@ -67,5 +57,4 @@
          for/fold1
          for/fold1/reverse
          for/filter
-         for/filter1
          for/append)

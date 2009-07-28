@@ -5,38 +5,8 @@
          scheme/provide-syntax
          scheme/string
          "base.ss"
+         "enum-internal.ss"
          "exn.ss")
-
-; Structure types --------------------------------
-
-; (struct symbol (listof symbol) (listof string))
-(define-struct enum (name values pretty-values) #:transparent)
-
-; Accessors and mutators -------------------------
-
-; enum -> string
-(define (enum->string enum [separator ", "])
-  (string-join (map enum-value->string (enum-values enum)) separator))
-
-; enum -> string
-(define (enum->pretty-string enum [separator ", "])
-  (string-join (enum-pretty-values enum) separator))
-
-; enum any -> boolean
-(define (enum-value? enum value)
-  (and (memq value (enum-values enum)) #t))
-
-; enum any [(U any (-> any))] -> (U string #f)
-(define (enum-prettify enum value [default (cut raise-exn exn:fail:contract
-                                                (format "expected (U ~a), received ~a"
-                                                        (enum->string enum " ") value))])
-  (let/ec return
-    (for ([val (enum-values enum)] [str (enum-pretty-values enum)])
-      (when (eq? val value)
-        (return str)))
-    (if (procedure? default)
-        (default)
-        default)))
 
 ; Syntax -----------------------------------------
 
@@ -186,13 +156,5 @@
 
 ; Provide statements -----------------------------
 
-(provide define-enum)
-
-(provide/contract
- [struct enum         ([name          symbol?]
-                       [values        (listof (or/c boolean? symbol? integer?))]
-                       [pretty-values (listof string?)])]
- [enum->string        (->* (enum?) (string?) string?)]
- [enum->pretty-string (->* (enum?) (string?) string?)]
- [enum-value?         (-> enum? any/c boolean?)]
- [enum-prettify       (->* (enum? any/c) ((or/c string? (-> string?))) string?)])
+(provide (all-from-out "enum-internal.ss")
+         define-enum)
