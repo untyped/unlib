@@ -25,6 +25,11 @@
    [two   (make-struct 'b) "two"]
    [three (make-struct 'c) "three"]))
 
+(define-enum underscores
+  ([a _ "one"]
+   [b _ "two"]
+   [c _ "three"]))
+
 ; Tests ------------------------------------------
 
 (define enumeration-tests
@@ -64,6 +69,10 @@
     (test-case "structs"
       (check-true (enum-value? structs (structs one)))
       (check-false (enum-value? structs (make-struct 'a))))
+    
+    (test-case "underscores"
+      (check-equal? (enum-list underscores a b c) '(a b c))
+      (check-equal? (enum-prettify underscores (underscores a)) "one"))
     
     (test-case "enum-value+false?"
       (check-true  (enum-value? vehicle (vehicle car)))

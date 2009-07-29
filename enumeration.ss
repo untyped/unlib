@@ -26,14 +26,17 @@
   (define (parse-values stx)
     (syntax-case stx ()
       [() (parse-finish)]
-      [([id val str] other ...)
+      [([id temp-val str] other ...)
        (identifier? #'id)
-       (begin (set! value-id-stxs   (cons #'id value-id-stxs))
-              (set! value-expr-stxs (cons #'val value-expr-stxs))
-              (set! pretty-stxs     (cons #'str pretty-stxs))
-              (parse-values #'(other ...)))]
-      [([id str] other ...)
-       (parse-values #'([id 'id str] other ...))]
+       ; Treat value of _ specially:
+       (with-syntax ([val (if (eq? (syntax->datum #'temp-val) '_) #''id #'temp-val)])
+         (set! value-id-stxs   (cons #'id value-id-stxs))
+         (set! value-expr-stxs (cons #'val value-expr-stxs))
+         (set! pretty-stxs     (cons #'str pretty-stxs))
+         (parse-values #'(other ...)))]
+      [([id val] other ...)
+       (with-syntax ([str (format "~a" (syntax->datum #'id))])
+         (parse-values #'([id val str] other ...)))]
       [([id] other ...)
        (with-syntax ([str (format "~a" (syntax->datum #'id))])
          (parse-values #'([id 'id str] other ...)))]

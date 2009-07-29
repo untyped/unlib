@@ -15,6 +15,48 @@ Utilities for defining simple enumerations of booleans, symbols and integers. Th
                  [pretty-values (listof string?)])]{
 An enumeration. For each symbol in @scheme[values] there is a human-readable string equivalent in @scheme[pretty-values].}
                                                    
+@defform/subs[#:literals (_) (define-enum enum-id (value-clause ...) keyword-arg ...)
+              ([value-clause value-id
+                             [value-id pretty-expr]
+                             [value-id value-expr pretty-expr]]
+               [value-expr   any
+                             _]
+               [pretty-expr  string?]
+               [keyword-arg (code:line #:plural id)])]{
+Binds @scheme[enum-id] to an @italic{enumeration macro} that can be used:
+
+@itemize{
+  @item{in argument position to refer to an @scheme[enum] struct;}
+  @item{in procedure call position to retrieve a value from the enumeration.}}
+
+@examples[
+  #:eval enum-eval
+  (define-enum options
+    ([a 'option1 "first option"]
+     [b "second option"]
+     c))
+  (options a)
+  (options b)
+  (options c)
+  (map (lambda (val)
+         (enum-prettify options val))
+       (list (options a) (options b) (options c)))]
+
+The identifier @scheme[_] can be used as a @scheme[value-expr] as a shorthand for @scheme['value-id]. This is useful when writing value clauses where the @scheme[value-id] and the @scheme[pretty-expr] are the most important parts.
+
+@examples[
+  #:eval enum-eval
+  (define-enum options
+    ([a _ "first option"]
+     [b _ "second option"]
+     [c _ "third option"]))
+  (options a)
+  (options b)
+  (options c)
+  (map (lambda (val)
+         (enum-prettify options val))
+       (list (options a) (options b) (options c)))]}
+  
 @defproc[(enum->string [enum enum?] [separator string? ", "]) string?]{
 Returns a string representation of @scheme[(enum-values enum)], useful for including in debugging output. @scheme[separator] is used to separate the enum values in the return value.
         
@@ -49,33 +91,7 @@ Returns the pretty equivalent of @scheme[value]. If @scheme[value] is not found 
 @itemize{
   @item{if @scheme[default] is a procedure, it is called to determine the return value;}
   @item{if @scheme[default] is not a procedure, it is returned.}}}
-       
-@defform/subs[(define-enum enum-id (value-clause ...) keyword-arg ...)
-              ([value-clause value-id
-                             [value-id pretty-expr]
-                             [value-id value-expr pretty-expr]]
-               [value-expr   (U boolean? symbol? integer?)]
-               [pretty-expr  string?]
-               [keyword-arg (code:line #:plural id)])]{
-Binds @scheme[enum-id] to an identifier macro that can be used:
 
-@itemize{
-  @item{in argument position to refer to an @scheme[enum] struct;}
-  @item{in procedure call position to retrieve a value from the enumeration.}}
-
-@examples[
-  #:eval enum-eval
-  (define-enum options
-    ([a 'option1 "first option"]
-     [b "second option"]
-     c))
-  (options a)
-  (options b)
-  (options c)
-  (map (lambda (val)
-         (enum-prettify options val))
-       (list (options a) (options b) (options c)))]}
-  
 @defform[(enum-list enum value ...)]{
 Expands to a @scheme[list] of @scheme[value]@schemeidfont{s} from @scheme[enum].
 
@@ -88,7 +104,6 @@ Expands to a @scheme[list] of @scheme[value]@schemeidfont{s} from @scheme[enum].
               ([clause [(value ...) expr ...]
                        [else expr ...]])]{
 Like @scheme[case] but each @scheme[value] must be a value from @scheme[enum]. If an @scheme[else] expression is not provided, the @scheme[value]@schemeidfont{s} must cover the complete enumeration.
-
 
 @examples[
   #:eval enum-eval
