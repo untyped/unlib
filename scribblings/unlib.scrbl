@@ -21,6 +21,7 @@ Unlib 3.x contains some legacy code that will be removed in Unlib 4.x. In most c
 
 @itemize{
   @item{support for the @scheme[mzscheme] language will be dropped;}
+  @item{the @filepath{enum.ss} module has been replaced with @scheme{enumeration.ss} and will be removed;}
   @item{the @filepath{hash-table.ss} module has been replaced with @filepath{hash.ss} and will be removed;}
   @item{the @filepath{cache-mzscheme.ss} module has been replaced with @filepath{cache.ss} and will be removed;}
   @item{the @filepath{string-mzscheme.ss} module has been replaced with @filepath{string.ss} and will be removed;}
