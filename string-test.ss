@@ -32,7 +32,17 @@
       (check-equal? (string-ellipsify "abcd" 1 "...") "abcd")
       (check-equal? (string-ellipsify "abcd" 4 "...") "abcd")
       (check-equal? (string-ellipsify "abcde" 4 "...") "a...")
-      (check-equal? (string-ellipsify "a b c d e " 7 "...") "a b..."))))
+      (check-equal? (string-ellipsify "a b c d e " 7 "...") "a b..."))
+    
+    (test-case "string-titlecase*"
+      (check-equal? (string-titlecase* "lowercase to titlecase")        "Lowercase To Titlecase")
+      (check-equal? (string-titlecase* "InterCapsed stays interCapsed") "InterCapsed Stays InterCapsed")
+      (check-equal? (string-titlecase* "ALLCAPS stays ALLCAPSED")       "ALLCAPS Stays ALLCAPSED"))
+    
+    (test-case "string-sentencecase"
+      (check-equal? (string-sentencecase "lowercase to capitalised")      "Lowercase to capitalised")
+      (check-equal? (string-sentencecase "Capitalised stays capitalised") "Capitalised stays capitalised")
+      (check-equal? (string-sentencecase "ALLCAPS stays ALLCAPSED")       "ALLCAPS stays ALLCAPSED"))))
 
 ; Provide statements -----------------------------
 

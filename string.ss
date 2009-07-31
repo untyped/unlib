@@ -1,6 +1,7 @@
 #lang scheme/base
 
-(require srfi/13
+(require (only-in scheme/port with-output-to-string)
+         srfi/13
          "base.ss"
          "convert.ss")
 
@@ -63,6 +64,25 @@
            (string-append (string-trim-right (string-take str trim-length)) ellipsis))]
         [else str]))
 
+; string -> string
+(define (string-sentencecase str)
+  (string-append (string (char-upcase (string-ref str 0)))
+                 (substring str 1)))
+
+; string -> string
+(define (string-titlecase* str)
+  (with-output-to-string
+   (lambda ()
+     (define new-word? #t)
+     (for ([chara (in-string str)])
+       (if (char-blank? chara)
+           (begin (write-char chara)
+                  (set! new-word? #t))
+           (begin (if new-word? 
+                      (write-char (char-upcase chara))
+                      (write-char chara))
+                  (set! new-word? #f)))))))
+
 ; Provide statements ---------------------------
 
 (provide symbol+false->string+false
@@ -71,8 +91,11 @@
          number+false->string+false)
 
 (provide/contract
- [string+false?    procedure?]
- [ensure-string    procedure?]
- [string-length/c  (-> natural-number/c flat-contract?)]
- [string-delimit   (->* ((listof string?) string?) (#:prefix (or/c string? false/c) #:suffix (or/c string? false/c)) string?)]
- [string-ellipsify (->* (string?) (integer? string?) string?)])
+ [string+false?       procedure?]
+ [ensure-string       procedure?]
+ [string-length/c     (-> natural-number/c flat-contract?)]
+ [string-delimit      (->* ((listof string?) string?)
+                           (#:prefix (or/c string? false/c) #:suffix (or/c string? false/c)) string?)]
+ [string-ellipsify    (->* (string?) (integer? string?) string?)]
+ [string-sentencecase (-> string? string?)]
+ [string-titlecase*   (-> string? string?)])

@@ -47,6 +47,30 @@ Returns a shortened version of @scheme[str] that is never longer than @scheme[ma
   (string-ellipsify
    "The quick brown fox.")]}
 
+@defproc[(string-sentencecase [str string?]) string?]{
+Returns a copy of @scheme[str] with the first character upcased.
+
+@examples[
+  #:eval string-eval
+  (string-sentencecase
+   "lowercase to capitalised")
+  (string-sentencecase
+   "Capitalised stays capitalised")
+  (string-sentencecase
+   "ALLCAPS stays ALLCAPSED")]}
+
+@defproc[(string-titlecase* [str string?]) string?]{
+Like @scheme[string-titlecase], in that the first character of each word is upcased, except that any upcase characters are left upcased.
+
+@examples[
+  #:eval string-eval
+         (string-titlecase*
+          "lowercase to titlecase")
+         (string-titlecase*
+          "InterCapsed stays interCapsed")
+      (string-titlecase*
+       "ALLCAPS stays ALLCAPSED")]}
+
 @defproc[(number+false->string+false [num (U number? #f)]) (U string? #f)]{
 
 A version of @scheme[number->string] that accepts and passes through @scheme[#f].}
