@@ -65,6 +65,7 @@
                  (set! value-val-stxs (reverse value-val-stxs))
                  (set! pretty-stxs (reverse pretty-stxs)))]
       [([id val str] other ...)
+       (identifier? #'id)
        (with-syntax ([enum-id     enum-id-stx]
                      [prefixed-id (prefix-id #'id)])
          (cond [(not (identifier? #'prefixed-id))
@@ -81,12 +82,16 @@
                      (set! pretty-stxs    (cons #'str pretty-stxs))
                      (parse-values enum-id-stx #'(other ...))]))]
       [([id str] other ...)
+       (identifier? #'id)
        (with-handlers ([exn? (lambda _ (raise-syntax-error #f "bad enum value" complete-stx #'[id str]))])
          (parse-values enum-id-stx #'([id 'id str] other ...)))]
       [(id other ...)
+       (identifier? #'id)
        (with-handlers ([exn? (lambda _ (raise-syntax-error #f "bad enum value" complete-stx #'id))])
          (with-syntax ([str (datum->syntax enum-id-stx (symbol->string (syntax->datum #'id)))])
-           (parse-values enum-id-stx #'([id 'id str] other ...))))]))
+           (parse-values enum-id-stx #'([id 'id str] other ...))))]
+      [(bad-clause other ...)
+       (raise-syntax-error #f "bad enum clause" complete-stx #'bad-clause)]))
   
   ; syntax -> void
   (define (parse-keywords enum-id-stx stx)

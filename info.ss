@@ -9,10 +9,7 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "added " (tt "for.ss") " containing several useful " (tt "for") " variants;")
-        (li "added " (tt "enumeration.ss") ", containing a new version of " (tt "enum.ss") ";")
-        (li "added " (tt "list-diff") " to " (tt "list.ss") ";")
-        (li "added optional " (tt "#:short?") " argument to " (tt "time->ago-string") " and " (tt "seconds->ago-string") "."))))
+    (ul (li "fixed infinite loop when parsing some badly formed " (tt "define-enum") " statements."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
