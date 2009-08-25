@@ -40,6 +40,9 @@ Returns @scheme[#t] if @scheme[value] is a member of @scheme[(enum-values enum)]
   (enum-value? vehicle 'car)
   (enum-value? vehicle 'apple)]}
 
+@defproc[(enum-value/c [enum enum?]) flat-contract?]{
+Returns a contract that accepts values from @scheme[(enum-values enum)].}
+
 @defproc[(enum-prettify [enum    enum?]
                         [value   symbol?]
                         [default (U string? (-> string?)) (cut raise-exn exn:fail:contract ...)])

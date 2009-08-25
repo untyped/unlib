@@ -30,6 +30,12 @@
 (define (enum-value? enum value)
   (and (memq value (enum-values enum)) #t))
 
+; enum -> contract
+(define (enum-value/c enum)
+  (flat-named-contract
+   `(enum-value/c ,(enum-name enum))
+   (cute enum-value? enum <>)))
+
 ; enum any -> boolean
 (define (enum-value+false? enum value)
   (or (not value) (enum-value? enum value)))
@@ -65,5 +71,6 @@
  [enum->string        (->* (enum?) (string?) string?)]
  [enum->pretty-string (->* (enum?) (string?) string?)]
  [enum-value?         (-> enum? any/c boolean?)]
+ [enum-value/c        (-> enum? flat-contract?)]
  [enum-value+false?   (-> enum? any/c boolean?)]
  [enum-prettify       (->* (enum? any/c) ((or/c string? (-> string?))) string?)])

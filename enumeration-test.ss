@@ -101,7 +101,15 @@
       (check-exn exn:fail? (cut enum-case option 'a [(a) 100] [(b c) 200]))
       
       (check-equal? (enum-case structs (structs one) [(one) 1] [(two) 2] [(three) 3] [else 4]) 1)
-      (check-equal? (enum-case structs (make-struct 'a) [(one) 1] [(two) 2] [(three) 3] [else 4]) 4))))
+      (check-equal? (enum-case structs (make-struct 'a) [(one) 1] [(two) 2] [(three) 3] [else 4]) 4))
+      
+    (test-case "in-enum"
+      (check-equal? (for/list ([val (in-enum option)])     val) (list 1 2 3))
+      (check-equal? (for/list ([val (in-enum option a c)]) val) (list 1 3)))
+        
+    (test-case "in-enum/pretty"
+      (check-equal? (for/list ([val (in-enum/pretty option)]) val) (list "item 1" "item 2" "item 3"))
+      (check-equal? (for/list ([val (in-enum/pretty option a c)]) val) (list "item 1" "item 3")))))
 
 ; Provide statements -----------------------------
 

@@ -35,13 +35,18 @@
          (set! pretty-stxs     (cons #'str pretty-stxs))
          (parse-values #'(other ...)))]
       [([id val] other ...)
+       (identifier? #'id)
        (with-syntax ([str (format "~a" (syntax->datum #'id))])
          (parse-values #'([id val str] other ...)))]
       [([id] other ...)
+       (identifier? #'id)
        (with-syntax ([str (format "~a" (syntax->datum #'id))])
          (parse-values #'([id 'id str] other ...)))]
       [(id other ...)
-       (parse-values #'([id] other ...))]))
+       (identifier? #'id)
+       (parse-values #'([id] other ...))]
+      [(bad-clause other ...)
+       (raise-syntax-error #f "bad enum clause" complete-stx #'bad-clause)]))
   
   (define (parse-finish)
     (with-syntax ([id                     id-stx]
@@ -151,6 +156,28 @@
            [other (error (format "enum-case ~a: value not in enumeration" 'enum-id)
                          other)])))]))
 
+; (_ enum)
+; (_ enum id ...)
+(define-syntax (in-enum stx)
+  (syntax-case stx ()
+    [(_ enum)
+     (identifier? #'enum)
+     #'(in-list (enum-values enum))]
+    [(_ enum val ...) 
+     (andmap identifier? (syntax->list #'(enum val ...)))
+     #'(in-list (enum-list enum val ...))]))
+
+; (_ enum)
+; (_ enum id ...)
+(define-syntax (in-enum/pretty stx)
+  (syntax-case stx ()
+    [(_ enum)
+     (identifier? #'enum)
+     #'(in-list (map (cut enum-prettify enum <>) (enum-values enum)))]
+    [(_ enum val ...) 
+     (andmap identifier? (syntax->list #'(enum val ...)))
+     #'(in-list (map (cut enum-prettify enum <>) (enum-list enum val ...)))]))
+
 ; Helpers ----------------------------------------
 
 ; (U boolean symbol integer) -> string
@@ -164,4 +191,6 @@
 (provide (all-from-out "enum-internal.ss")
          define-enum
          enum-list
-         enum-case)
+         enum-case
+         in-enum
+         in-enum/pretty)

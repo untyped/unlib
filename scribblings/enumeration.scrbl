@@ -76,6 +76,31 @@ Returns a string representation of @scheme[(enum-pretty-values enum)], useful fo
 @defproc[(enum-value? [enum enum?] [value any]) boolean?]{
 Returns @scheme[#t] if @scheme[value] is a member of @scheme[(enum-values enum)].
 
+@defproc[(enum-value/c [enum enum?]) flat-contract?]{
+Returns a contract that accepts values from @scheme[(enum-values enum)].}
+
+@defform[(in-enum enum val ...)]{
+Like @scheme[in-list] but iterates through @scheme[(enum-list enum val ...)].
+
+@examples[
+  #:eval enum-eval
+  (define-enum vehicle (car boat plane))
+  (for/list ([val (in-enum vehicle)])
+    val)]
+  (for/list ([val (in-enum vehicle car plane)])
+    val)]}
+
+@defform[(in-enum/pretty enum val ...)]{
+Like @scheme[in-list] but iterates through the pretty versions of @scheme[(enum-list enum val ...)].
+
+@examples[
+  #:eval enum-eval
+  (define-enum vehicle (car boat plane))
+  (for/list ([val (in-enum/pretty vehicle)])
+    val)]
+  (for/list ([val (in-enum vehicle car plane)])
+    val)]}
+
 @examples[
   #:eval enum-eval
   (define-enum vehicle (car boat plane))
