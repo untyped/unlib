@@ -222,5 +222,5 @@
  [debug-enabled?        (parameter/c boolean?)]
  [current-debug-printer (parameter/c (-> string? any/c void?))]
  [debug                 (-> string? any/c any)]
- [debug-syntax          (-> string? syntax? any)]
+ [debug-syntax          (-> string? syntax? syntax?)]
  [exn-context           (-> exn? (listof symbol?))])
