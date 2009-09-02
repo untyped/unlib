@@ -32,7 +32,8 @@
                                        (syntax->datum val-id-stx))
                                   (quasisyntax/loc stx #,val-stx)))
                            (raise-enum-syntax-error))]
-      [(id val-id ...) (identifier? #'id)
+      [(id val-id ...) (and (identifier? #'id)
+                            (andmap identifier? (syntax->list #'(val-id ...))))
                        (syntax/loc stx (list (id val-id) ...))]
       [id              (identifier? #'id)
                        (quasisyntax/loc stx #,(enum-info-private-id info))])))
