@@ -33,13 +33,13 @@
       (let ([gen (range->generator 5)])
         (check-equal? (list (gen) (gen) (gen) (gen) (gen) (gen)) '(5 6 7 8 9 10))))
     
-    (test-case "generator->list works as expected"
+    (test-case "generator->list"
       (check-equal? (generator->list (list->generator (list 1 2 3)))
                     (list 1 2 3))
       (check-equal? (generator->list (list->generator (list 1 2 3 generator-end 4 5)))
                     (list 1 2 3)))
     
-    (test-case "generator->hash works as expected"
+    (test-case "generator->hash"
       (check-equal? (hash->alist
                      (generator->hash
                       (list->generator (list 2 4 6))
@@ -59,7 +59,7 @@
                       (100 . 200)
                       (300 . 400))))
     
-    (test-case "generator-fold works as expected"
+    (test-case "generator-fold"
       (check-equal? (generator-fold 
                      cons
                      null
@@ -80,7 +80,16 @@
                      (list->generator (list 2 4 6 generator-end 10)))
                     (list 9 6 3)))
     
-    (test-case "generator-map works as expected"
+    (test-case "generator-append"
+      (check-equal? (generator->list (generator-append)) null)
+      (check-equal? (generator->list (generator-append (list->generator (list 1 2 3))))
+                    (list 1 2 3))
+      (check-equal? (generator->list (generator-append (list->generator (list 1 2 3))
+                                                       (list->generator (list 4 5 6))
+                                                       (list->generator (list 7 8 9))))
+                    (list 1 2 3 4 5 6 7 8 9)))
+    
+    (test-case "generator-map"
       (check-equal? (generator->list 
                      (generator-map 
                       even?
@@ -93,7 +102,7 @@
                       (list->generator (list 1 3 5 7 9))))
                     (list 2 5 8 11 14)))
     
-    (test-case "generator-fold-map works as expected"
+    (test-case "generator-fold-map"
       (check-equal? (generator->list 
                      (generator-fold-map
                       +
@@ -108,14 +117,14 @@
                       (list->generator (list 1 3 5 7 9))))
                     (list 2 7 15 26 40)))
     
-    (test-case "generator-filter works as expected"
+    (test-case "generator-filter"
       (check-equal? (generator->list 
                      (generator-filter
                       even?
                       (list->generator (list 1 2 3 4 5))))
                     (list 2 4)))
     
-    (test-case "generator-filter-map works as expected"
+    (test-case "generator-filter-map"
       (check-equal? (generator->list 
                      (generator-filter-map
                       (lambda (a)
@@ -125,13 +134,13 @@
                       (list->generator (list 1 2 3 4 5))))
                     (list 4 8)))
     
-    (test-case "generator-remove-duplicates works as expected"
+    (test-case "generator-remove-duplicates"
       (check-equal? (generator->list 
                      (generator-remove-duplicates
                       (list->generator (list 1 2 2 3 3 3 4 4 5))))
                     (list 1 2 3 4 5)))
     
-    (test-case "generator-for-each works as expected"
+    (test-case "generator-for-each"
       (check-equal? (let ([accum null])
                       (generator-for-each
                        (lambda (a)
@@ -148,7 +157,7 @@
                       accum)
                     (list 15 12 9 6 3)))
     
-    (test-case "generator-project works as expected"
+    (test-case "generator-project"
       (let ([generate (generator-project (list #t #t #f #f)
                                          (list->generator (list (list 0 0 0 0)
                                                                 (list 0 0 0 1)

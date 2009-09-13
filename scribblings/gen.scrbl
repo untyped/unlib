@@ -74,9 +74,13 @@ Shorter name for @scheme[generator-for-each]}
 
 Shorter name for @scheme[generator-fold]}
 
+@defproc[(g:append [gen (gen-> any)] ...) (gen-> any)]{
+
+Shorter name for @scheme[generator-append]}
+
 @defproc[(g:collect [src (gen-> a)]) (listof a)]{
 
-Shorter name for @scheme[generator-fold].}
+Shorter name for @scheme[generator->list].}
 
 @defproc[(g:collect/hash [src (gen-> a)]
                          [item->key (a -> b)]

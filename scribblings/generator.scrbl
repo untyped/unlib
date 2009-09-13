@@ -175,6 +175,16 @@ Like @scheme[generator-fold-map] but only the result of the final application of
 @examples[
   #:eval gen-eval
   (generator-fold + 0 (list->generator '(1 2 3)))]}
+                                                       
+@defproc[(generator-append [gen (gen-> any)] ...) (gen-> any)]{
+
+Returns a generator that exhausts each of its arguments in turn, in the orger they are given.
+
+@examples[
+  #:eval gen-eval
+  (generator-append (list->generator '(1 2 3))
+                    (list->generator '(4 5 6))
+                    (list->generator '(7 8 9)))]}
 
 @defproc[(generator->list [src (gen-> a)]) (listof a)]{
 

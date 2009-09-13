@@ -19,6 +19,7 @@
  [rename generator-debug             g:debug             (-> string? procedure? procedure?)]
  [rename generator-for-each          g:for-each          (->* (procedure?) () #:rest (listof procedure?) any)]
  [rename generator-fold              g:fold              (->* (procedure? any/c) () #:rest (listof procedure?) any)]
+ [rename generator-append            g:append            (->* () () #:rest (listof procedure?) procedure?)]
  [rename generator->list             g:collect           (-> procedure? (or/c pair? null?))]
  [rename generator->hash             g:collect/hash      (->* (procedure? procedure?) 
                                                               (procedure? (and/c hash? dict-mutable?))

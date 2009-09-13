@@ -206,6 +206,18 @@
           accum
           (loop (apply proc (append args (list accum))))))))
 
+; (-> (U any generator-end)) ... -> (-> (U any generator-end))
+(define (generator-append . gens)
+  (letrec ([ans (lambda ()
+                  (if (null? gens)
+                      generator-end
+                      (let ([val ((car gens))])
+                        (if (generator-end? val)
+                            (begin (set! gens (cdr gens))
+                                   (ans))
+                            val))))])
+    ans))
+
 ; (listof a) -> (-> (U a generator-end))
 ;
 ; Creates a generator that iterates through the values in data and then
@@ -348,6 +360,7 @@
  [generator-debug             (-> string? procedure? procedure?)]
  [generator-for-each          (->* (procedure?) () #:rest (listof procedure?) any)]
  [generator-fold              (->* (procedure? any/c) () #:rest (listof procedure?) any)]
+ [generator-append            (->* () () #:rest (listof procedure?) procedure?)]
  [generator->list             (-> procedure? (or/c pair? null?))]
  [generator->hash             (->* (procedure? procedure?) 
                                    (procedure? (and/c hash? dict-mutable?))

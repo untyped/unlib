@@ -11,7 +11,8 @@
   '((p "Changes and additions:")
     (ul (li "fixed infinite loop when parsing some badly formed " (tt "define-enum") " statements;")
         (li "added " (tt "in-enum") " and " (tt "in-enum/pretty") " forms to " (tt "enumeration.ss") ";")
-        (li "added " (tt "enum-value/c") " to " (tt "enumeration.ss") " and " (tt "enum.ss") "."))))
+        (li "added " (tt "enum-value/c") " to " (tt "enumeration.ss") " and " (tt "enum.ss") ";")
+        (li "added " (tt "generator-append") " and " (tt "g:append") "."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
