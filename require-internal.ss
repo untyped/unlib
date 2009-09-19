@@ -38,6 +38,7 @@
        (expand-export new-stx modes)))))
 
 ; path -> require-transformer provide-transformer
+; Acknowledgement - copied in part from cce/scheme.plt:
 (define (make-file-library-transformers root-spec)
   (define root-path
     (path->complete-path (expand-user-path (build-path root-spec))))
@@ -76,6 +77,7 @@
                                                                                (syntax->list #'(path ...))))) modes)])))))
 
 ; symbol -> require-transformer provide-transformer
+; Acknowledgement - copied in part from cce/scheme.plt:
 (define (make-planet-library-transformers root-spec)
   (define (make-path datum)
     (string->symbol (format "~a/~a" root-spec datum)))
