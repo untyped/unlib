@@ -169,6 +169,14 @@
 (define (current-year)
   (date-year (time-tai->date (current-time time-tai))))
 
+; time-utc string -> string
+(define (time-utc->string time fmt)
+  (date->string (time-utc->date time) fmt))
+                                           
+; time-tai string -> string
+(define (time-tai->string time fmt)
+  (date->string (time-tai->date time) fmt))
+
 ; Provide statements --------------------------- 
 
 ; contract
@@ -214,4 +222,6 @@
  [seconds->ago-string      (->* (integer?) (integer? #:format string? #:short? boolean?) string?)]
  [time->ago-string         (->* (time/c) (time/c #:format string? #:short? boolean?) string?)]
  [current-time-zone-offset (-> integer?)]
- [current-year             (-> integer?)])
+ [current-year             (-> integer?)]
+ [time-utc->string         (-> time-utc? string? string?)]
+ [time-tai->string         (-> time-tai? string? string?)])

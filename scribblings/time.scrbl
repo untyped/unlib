@@ -93,4 +93,12 @@ Returns the current four digit year.}
 
 Returns the current local time-zone offset in seconds (taking into account DST when and where appropriate).}
 
+@defproc[(time-tai->string [time time-tai] [format-string string?]) string?]{
+
+Formats @scheme[time] (a @scheme[time-tai] struct) according to the specified @scheme[srfi/19] @scheme[format-string].}
+
+@defproc[(time-utc->string [time time-utc] [format-string string?]) string?]{
+
+Formats @scheme[time] (a @scheme[time-utc] struct) according to the specified @scheme[srfi/19] @scheme[format-string].}
+
 } @;{end defmodule}
