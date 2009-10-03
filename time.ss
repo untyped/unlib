@@ -91,11 +91,20 @@
 
 ; date -> (U 'mon 'tue 'wed 'thu 'fri 'sat 'sun)
 (define (date-day-of-the-week date)
-  (string->symbol (string-downcase (date->string date "~a"))))
+  (case (date-week-day date)
+    [(0) 'sun]
+    [(1) 'mon]
+    [(2) 'tue]
+    [(3) 'wed]
+    [(4) 'thu]
+    [(5) 'fri]
+    [(6) 'sat]))
 
 ; date -> boolean
 (define (date-week-day? date)
-  (and (memq (date-day-of-the-week date) '(mon tue wed thu fri)) #t))
+  (let ([day (date-week-day date)])
+    (and (>= day 1)
+         (<= day 5))))
 
 ; Other utilities --------------------------------
 
