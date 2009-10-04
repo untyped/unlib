@@ -47,8 +47,8 @@
 ; (U time-tai time-utc) -> date
 (define (time->date time)
   (if (time-tai? time)
-      (time-tai->date time)
-      (time-utc->date time)))
+      (time-tai->date time 0)
+      (time-utc->date time 0)))
 
 ; Date and time predicates -----------------------
 
