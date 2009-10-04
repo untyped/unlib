@@ -9,7 +9,7 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "fixed bug in " (tt "time->date") "."))))
+    (ul (li "nothing yet..."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
