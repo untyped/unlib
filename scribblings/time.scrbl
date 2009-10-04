@@ -22,7 +22,7 @@ Utility procedures for use with SRFI 19 times and dates.
                     
 Creates a copy of @scheme[date], substituting non-@scheme[#f] arguments for the values of the relevant fields.}
 
-@defproc[(time->date [time (U time-tai? time-utc?)]) srfi:date?]{
+@defproc[(time->date [time (U time-tai? time-utc?)] [tz integer? (current-time-zone-offset)]) srfi:date?]{
 
 Converts @scheme[time] to a date.}
 

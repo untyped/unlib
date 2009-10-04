@@ -44,11 +44,15 @@
              (or year        (date-year date))
              (or zone-offset (date-zone-offset date))))
 
-; (U time-tai time-utc) -> date
-(define (time->date time)
-  (if (time-tai? time)
-      (time-tai->date time)
-      (time-utc->date time)))
+; (U time-tai time-utc) [integer] -> date
+(define (time->date time [tz #f])
+  (if tz
+      (if (time-tai? time)
+          (time-tai->date time)
+          (time-utc->date time))
+      (if (time-tai? time)
+          (time-tai->date time tz)
+          (time-utc->date time tz))))
 
 ; Date and time predicates -----------------------
 
@@ -219,7 +223,7 @@
                                               #:year        (or/c integer? #f)
                                               #:zone-offset (or/c (integer-in min-zone-offset max-zone-offset) #f))
                                 date?)]
- [time->date               (-> time/c date?)]
+ [time->date               (->* (time/c) (integer?) date?)]
  [time-tai?                procedure?]
  [time-utc?                procedure?]
  [time-duration?           procedure?]
