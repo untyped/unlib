@@ -4,6 +4,7 @@
                      srfi/26
                      "debug.ss"
                      "enumeration-info.ss"
+                     "for.ss"
                      "syntax.ss")
          scheme/provide-syntax
          scheme/string
@@ -90,6 +91,17 @@
      (syntax/loc stx
        (list (enum-id val-id) ...))]))
 
+(define-syntax (enum-compliment stx)
+  (syntax-case stx ()
+    [(_ enum-id val-id ...)
+     (andmap identifier? (syntax->list #'(enum-id val-id ...)))
+     (let ([val-ids (map syntax->datum (syntax->list #'(val-id ...)))]
+           [all-ids (enum-info-value-ids (enum-info-ref #'enum-id))])
+       (quasisyntax/loc stx
+         (list #,@(for/filter ([id (in-list all-ids)])
+                    (and (not (memq (syntax->datum id) val-ids))
+                         #`(enum-id #,id))))))]))
+
 (define-syntax (enum-case complete-stx)
   
   ; enum-info syntax -> void
@@ -126,9 +138,9 @@
            [used-ids  (map syntax->datum (apply append (map syntax->list case-stxs)))])
       (for/fold ([accum null])
                 ([all-id (in-list all-ids)])
-        (if (memq all-id used-ids)
-            accum
-            (cons all-id accum)))))
+                (if (memq all-id used-ids)
+                    accum
+                    (cons all-id accum)))))
   
   (syntax-case* complete-stx (else) symbolic-identifier=?
     
@@ -191,6 +203,7 @@
 (provide (all-from-out "enum-internal.ss")
          define-enum
          enum-list
+         enum-compliment
          enum-case
          in-enum
          in-enum/pretty)

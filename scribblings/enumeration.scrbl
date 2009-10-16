@@ -125,6 +125,14 @@ Expands to a @scheme[list] of @scheme[value]@schemeidfont{s} from @scheme[enum].
   (define-enum vehicles (car boat plane))
   (enum-list vehicles car boat)]}
 
+@defform[(enum-compliment enum value ...)]{
+Expands to a @scheme[list] of all values in @scheme[enum] apart from the specified @scheme[value]@schemeidfont{s}.
+
+@examples[
+  #:eval enum-eval
+  (define-enum vehicles (car boat plane))
+  (enum-compliment vehicles car boat)]}
+
 @defform/subs[#:literals (else) (enum-case enum value clause ...)
               ([clause [(value ...) expr ...]
                        [else expr ...]])]{

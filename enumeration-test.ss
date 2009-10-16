@@ -45,6 +45,7 @@
       (check-equal? (vehicle boat) 'boat)
       (check-equal? (vehicle plane) 'plane)
       (check-equal? (enum-list vehicle boat plane) '(boat plane))
+      (check-equal? (enum-compliment vehicle boat plane) '(car))
       (check-true (enum-value? vehicle 'car))
       (check-true (enum-value? vehicle 'boat))
       (check-true (enum-value? vehicle 'plane))
@@ -72,6 +73,7 @@
     
     (test-case "underscores"
       (check-equal? (enum-list underscores a b c) '(a b c))
+      (check-equal? (enum-compliment underscores a b c) null)
       (check-equal? (enum-prettify underscores (underscores a)) "one"))
     
     (test-case "enum-value+false?"
