@@ -91,7 +91,7 @@
      (syntax/loc stx
        (list (enum-id val-id) ...))]))
 
-(define-syntax (enum-compliment stx)
+(define-syntax (enum-complement stx)
   (syntax-case stx ()
     [(_ enum-id val-id ...)
      (andmap identifier? (syntax->list #'(enum-id val-id ...)))
@@ -203,7 +203,7 @@
 (provide (all-from-out "enum-internal.ss")
          define-enum
          enum-list
-         enum-compliment
+         enum-complement
          enum-case
          in-enum
          in-enum/pretty)
