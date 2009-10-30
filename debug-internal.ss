@@ -68,9 +68,35 @@
 
 ; (_ id value)
 (define-syntax (define/debug stx)
+  
+  (define (args->exprs arg-stx)
+    (syntax-case arg-stx ()
+      [() null]
+      [(id rest ...)
+       (identifier? #'id)
+       (cons #'(list 'id id)
+             (args->exprs #'(rest ...)))]
+      [([id expr] rest ...)
+       (identifier? #'id)
+       (cons #'(list 'id id)
+             (args->exprs #'(rest ...)))]
+      [(kw rest ...)
+       (keyword? (syntax->datum #'kw))
+       (args->exprs #'(rest ...))]
+      [_ (raise-syntax-error #f "bad function argument" arg-stx stx)]))
+  
   (syntax-case stx ()
-    [(_ id val)
-     #`(define id (debug (symbol->string 'id) val))]))
+    [(_ (id arg ...)
+        expr ...)
+     (identifier? #'id)
+     #`(define (id arg ...)
+         (debug (format ">>> ~a" 'id)
+                (list #,@(args->exprs #'(arg ...))))
+         (debug (format "<<< ~a"  'id)
+                ((lambda () expr ...))))]
+    [(_ id expr)
+     (identifier? #'id)
+     #`(define id (debug (symbol->string 'id) expr))]))
 
 ; (_ (id ...) value)
 (define-syntax (define-values/debug stx)
