@@ -9,8 +9,7 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "added " (tt "enum-complement") " macro to " (tt "enumeration.ss") ";")
-        (li "fixed bug related to misuse of " (tt "define-match-expander") " in " (tt "match.ss") "."))))
+    (ul (li "watch this space..."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
