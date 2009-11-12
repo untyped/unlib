@@ -11,14 +11,18 @@
   (syntax-rules ()
     [(_ expr pattern ...)
      (? (cut eq? <> expr) pattern ...)])
-  eq?)
+  (syntax-rules ()
+    [(_ arg ...)
+     (eq? arg ...)]))
 
 ; (_ expr pattern ...)
 (define-match-expander match:equal?
   (syntax-rules ()
     [(_ expr pattern ...)
      (? (cut equal? <> expr) pattern ...)])
-  equal?)
+  (syntax-rules ()
+    [(_ arg ...)
+     (equal? arg ...)]))
 
 ; (_ proc pattern ...)
 (define-match-expander app*
