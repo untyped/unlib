@@ -48,11 +48,11 @@
 (define (time->date time [tz #f])
   (if tz
       (if (time-tai? time)
-          (time-tai->date time)
-          (time-utc->date time))
-      (if (time-tai? time)
           (time-tai->date time tz)
-          (time-utc->date time tz))))
+          (time-utc->date time tz))
+      (if (time-tai? time)
+          (time-tai->date time)
+          (time-utc->date time))))
 
 ; Date and time predicates -----------------------
 
