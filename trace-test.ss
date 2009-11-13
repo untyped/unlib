@@ -25,30 +25,24 @@
 
 ; Test suite -----------------------------------
 
-(define trace-tests
-  (test-suite "trace.ss"
-    
-    (test-case "define-traced function prints entry and exit"
-      (check string=?
-             (capture-output (foo 1 2))
-             "> (foo 1 2)\n< (foo 1 2)\n"))
-    
-    (test-case "define-traced lambda prints entry and exit"
-      (check string=?
-             (capture-output (bar 1 2))
-             "> (bar 1 2)\n< (bar 1 2)\n"))
-    
-    (test-case "define-traced opt-lambda prints entry and exit"
-      (check string=?
-             (capture-output (baz))
-             "> (baz 1* 2*)\n< (baz 1* 2*)\n"))
-    
-    (test-case "lambda-traced prints entry and exit"
-      (check string=?
-             (capture-output (quux 1 2))
-             "Entering traced lambda:\n  (1 2)\nLeaving traced lambda:\n  3\n"))))
-
-; Provide statements -----------------------------
-
-(provide trace-tests)
-
+(define/provide-test-suite trace-tests
+  
+  (test-case "define-traced function prints entry and exit"
+    (check string=?
+           (capture-output (foo 1 2))
+           "> (foo 1 2)\n< (foo 1 2)\n"))
+  
+  (test-case "define-traced lambda prints entry and exit"
+    (check string=?
+           (capture-output (bar 1 2))
+           "> (bar 1 2)\n< (bar 1 2)\n"))
+  
+  (test-case "define-traced opt-lambda prints entry and exit"
+    (check string=?
+           (capture-output (baz))
+           "> (baz 1* 2*)\n< (baz 1* 2*)\n"))
+  
+  (test-case "lambda-traced prints entry and exit"
+    (check string=?
+           (capture-output (quux 1 2))
+           "Entering traced lambda:\n  (1 2)\nLeaving traced lambda:\n  3\n")))

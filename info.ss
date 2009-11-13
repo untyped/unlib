@@ -9,7 +9,7 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "watch this space..."))))
+    (ul (li "bug fix to " (tt "eq?") " and " (tt "equal?") " in " (tt "match.ss") "."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))

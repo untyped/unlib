@@ -36,41 +36,36 @@
 
 ; Tests ------------------------------------------
 
-(define all-unlib-tests
-  (test-suite "unlib"
-    bytes-tests
-    cache-tests
-    cache-internal-tests
-    contract-tests
-    convert-tests
-    crc-tests
-    debug-tests
-    enum-tests
-    enumeration-tests
-    exn-tests
-    file-tests
-    generator-tests
-    gen-tests
-    hash-table-tests
-    hash-tests
-    keyword-tests
-    lifebox-tests
-    list-tests
-    log-tests
-    match-tests
-    number-tests
-    pipeline-tests
-    preprocess-tests
-    profile-tests
-    project-tests
-    string-tests
-    symbol-tests
-    syntax-tests
-    time-tests
-    trace-tests
-    url-tests
-    yield-tests))
-
-; Provide statements -----------------------------
-
-(provide all-unlib-tests)
+(define/provide-test-suite all-unlib-tests
+  bytes-tests
+  cache-tests
+  cache-internal-tests
+  contract-tests
+  convert-tests
+  crc-tests
+  debug-tests
+  enum-tests
+  enumeration-tests
+  exn-tests
+  file-tests
+  generator-tests
+  gen-tests
+  hash-table-tests
+  hash-tests
+  keyword-tests
+  lifebox-tests
+  list-tests
+  log-tests
+  match-tests
+  number-tests
+  pipeline-tests
+  preprocess-tests
+  profile-tests
+  project-tests
+  string-tests
+  symbol-tests
+  syntax-tests
+  time-tests
+  trace-tests
+  url-tests
+  yield-tests)

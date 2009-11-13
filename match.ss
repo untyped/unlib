@@ -1,6 +1,10 @@
 #lang scheme/base
 
-(require scheme/match
+(require "base.ss")
+
+(require (for-syntax scheme/base
+                     (cce-scheme-in syntax))
+         scheme/match
          srfi/26
          "debug.ss")
 
@@ -8,21 +12,19 @@
 
 ; (_ expr pattern ...)
 (define-match-expander match:eq?
-  (syntax-rules ()
-    [(_ expr pattern ...)
-     (? (cut eq? <> expr) pattern ...)])
-  (syntax-rules ()
-    [(_ arg ...)
-     (eq? arg ...)]))
+  (lambda (stx)
+    (syntax-case stx ()
+      [(_ expr pattern ...)
+       #'(? (cut eq? <> expr) pattern ...)]))
+  (redirect-transformer #'eq?))
 
 ; (_ expr pattern ...)
 (define-match-expander match:equal?
-  (syntax-rules ()
-    [(_ expr pattern ...)
-     (? (cut equal? <> expr) pattern ...)])
-  (syntax-rules ()
-    [(_ arg ...)
-     (equal? arg ...)]))
+  (lambda (stx)
+    (syntax-case stx ()
+      [(_ expr pattern ...)
+       #'(? (cut equal? <> expr) pattern ...)]))
+  (redirect-transformer #'equal?))
 
 ; (_ proc pattern ...)
 (define-match-expander app*

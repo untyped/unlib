@@ -51,56 +51,52 @@
 
 ; Tests ------------------------------------------
 
-(define cache-tests
-  (test-suite "cache.ss"
-    
-    #:before (lambda () 
-               (clean-up)
-               (printf "Starting tests for cache.ss (these will take a few seconds).~n"))
-    #:after  (lambda ()
-               (clean-up)
-               (printf "Finished tests for cache.ss.~n"))
-    
-    (cache-test-case "Empty cache calls load"
-      (check-equal? (cache-ref cache0 'a) 1)
-      (check-equal? loads '(a)))
-    
-    (cache-test-case "Populated cache doesn't call load"
-      (cache-ref cache0 'a)
-      (check-equal? (cache-ref cache0 'a) 1)
-      (check-equal? loads '(a)))
-    
-    (cache-test-case "Store to cache writes through"
-      (cache-set! cache0 'a 'foo)
-      (check-equal? saves '((a . foo)))
-      (check-equal? (cache-ref cache0 'a) 'foo))
-    
-    (cache-test-case "Empty 'equal cache calls load"
-      (set! loads null)
-      (check-equal? (cache-ref cache1 "a") 1)
-      (check-equal? loads '("a")))
-    
-    (cache-test-case "Populated 'equal cache doesn't call load"
-      ; Store a then reset
-      (cache-set! cache1 "a" 1)
-      (set! loads '())
-      (cache-ref cache1 "a")
-      (check-equal? (cache-ref cache1 "a") 1)
-      (check-equal? loads '()))
-    
-    (cache-test-case "Store to 'equal cache writes through"
-      (cache-set! cache1 "a" 'foo)
-      (check-equal? saves '(("a" . foo)))
-      (check-equal? (cache-ref cache1 "a") 'foo))
-
-    (cache-test-case "Expire function is called when lifetime exceeded"
-      (cache-set! cache1 "a" 'foo)
-      (sleep 2)
-      (check-equal? (cache-ref cache1 "a") 1)
-      (check-equal? expiries '("a")))
-    
-    ))
-
-; Provide statements -----------------------------
-
-(provide cache-tests)
+(define/provide-test-suite cache-tests
+  
+  #:before (lambda () 
+             (clean-up)
+             (printf "Starting tests for cache.ss (these will take a few seconds).~n"))
+  
+  #:after  (lambda ()
+             (clean-up)
+             (printf "Finished tests for cache.ss.~n"))
+  
+  (cache-test-case "Empty cache calls load"
+    (check-equal? (cache-ref cache0 'a) 1)
+    (check-equal? loads '(a)))
+  
+  (cache-test-case "Populated cache doesn't call load"
+    (cache-ref cache0 'a)
+    (check-equal? (cache-ref cache0 'a) 1)
+    (check-equal? loads '(a)))
+  
+  (cache-test-case "Store to cache writes through"
+    (cache-set! cache0 'a 'foo)
+    (check-equal? saves '((a . foo)))
+    (check-equal? (cache-ref cache0 'a) 'foo))
+  
+  (cache-test-case "Empty 'equal cache calls load"
+    (set! loads null)
+    (check-equal? (cache-ref cache1 "a") 1)
+    (check-equal? loads '("a")))
+  
+  (cache-test-case "Populated 'equal cache doesn't call load"
+    ; Store a then reset
+    (cache-set! cache1 "a" 1)
+    (set! loads '())
+    (cache-ref cache1 "a")
+    (check-equal? (cache-ref cache1 "a") 1)
+    (check-equal? loads '()))
+  
+  (cache-test-case "Store to 'equal cache writes through"
+    (cache-set! cache1 "a" 'foo)
+    (check-equal? saves '(("a" . foo)))
+    (check-equal? (cache-ref cache1 "a") 'foo))
+  
+  (cache-test-case "Expire function is called when lifetime exceeded"
+    (cache-set! cache1 "a" 'foo)
+    (sleep 2)
+    (check-equal? (cache-ref cache1 "a") 1)
+    (check-equal? expiries '("a")))
+  
+  )

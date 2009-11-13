@@ -25,34 +25,29 @@
 
 ; Tests ------------------------------------------
 
-(define log-tests
-  (test-suite "log.ss"
-    
-    (test-message "log-fatal*"
-                  "F"
-                  (log-fatal* "a" "b" "c" 1 2 3 #t #f)
-                  "\"a\",\"b\",\"c\",1,2,3,#t,#f")
-    
-    (test-message "log-error*"
-                  "E"
-                  (log-error* "a" "b" "c" 1 2 3 #t #f)
-                  "\"a\",\"b\",\"c\",1,2,3,#t,#f")
-    
-    (test-message "log-warning*"
-                  "W"
-                  (log-warning* "a" "b" "c" 1 2 3 #t #f)
-                  "\"a\",\"b\",\"c\",1,2,3,#t,#f")
-    
-    (test-message "log-info*"
-                  "I"
-                  (log-info* "a" "b" "c" 1 2 3 #t #f)
-                  "\"a\",\"b\",\"c\",1,2,3,#t,#f")
-    
-    (test-message "log-debug*"
-                  "D"
-                  (log-debug* "a" "b" "c" 1 2 3 #t #f)
-                  "\"a\",\"b\",\"c\",1,2,3,#t,#f")))
-
-; Provide statements -----------------------------
-
-(provide log-tests)
+(define/provide-test-suite log-tests
+  
+  (test-message "log-fatal*"
+                "F"
+                (log-fatal* "a" "b" "c" 1 2 3 #t #f)
+                "\"a\",\"b\",\"c\",1,2,3,#t,#f")
+  
+  (test-message "log-error*"
+                "E"
+                (log-error* "a" "b" "c" 1 2 3 #t #f)
+                "\"a\",\"b\",\"c\",1,2,3,#t,#f")
+  
+  (test-message "log-warning*"
+                "W"
+                (log-warning* "a" "b" "c" 1 2 3 #t #f)
+                "\"a\",\"b\",\"c\",1,2,3,#t,#f")
+  
+  (test-message "log-info*"
+                "I"
+                (log-info* "a" "b" "c" 1 2 3 #t #f)
+                "\"a\",\"b\",\"c\",1,2,3,#t,#f")
+  
+  (test-message "log-debug*"
+                "D"
+                (log-debug* "a" "b" "c" 1 2 3 #t #f)
+                "\"a\",\"b\",\"c\",1,2,3,#t,#f"))
