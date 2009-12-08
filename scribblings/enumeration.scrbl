@@ -147,5 +147,20 @@ Like @scheme[case] but each @scheme[value] must be a value from @scheme[enum]. I
       [(car boat) #f]))
   (flies? 'car)
   (flies? 'plane)]}
+                                         
+@defform/subs[#:literals (else) (enum-lambda enum clause ...)
+              ([clause [(value ...) expr ...]
+                       [else expr ...]])]{
+Expands to a procedure that accepts a single argument and runs @shceme[enum-case] on it.
+
+@examples[
+  #:eval enum-eval
+  (define-enum vehicles (car boat plane))
+  (define flies?
+    (enum-lambda vehicles
+      [(plane) #t]
+      [(car boat) #f]))
+  (flies? 'car)
+  (flies? 'plane)]}
 
 } @;{end defmodule}

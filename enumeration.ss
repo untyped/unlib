@@ -168,6 +168,13 @@
            [other (error (format "enum-case ~a: value not in enumeration" 'enum-id)
                          other)])))]))
 
+(define-syntax (enum-lambda stx)
+  (syntax-case stx ()
+    [(_ enum clause ...)
+     (syntax/loc stx
+       (lambda (val)
+         (enum-case enum val clause ...)))]))
+
 ; (_ enum)
 ; (_ enum id ...)
 (define-syntax (in-enum stx)
@@ -205,5 +212,6 @@
          enum-list
          enum-complement
          enum-case
+         enum-lambda
          in-enum
          in-enum/pretty)

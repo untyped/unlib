@@ -9,7 +9,7 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "watch this space..."))))
+    (ul (li "added " (tt "enum-lambda") " to " (tt "enumeration.ss") "."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))

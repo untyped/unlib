@@ -104,6 +104,13 @@
     (check-equal? (enum-case structs (structs one) [(one) 1] [(two) 2] [(three) 3] [else 4]) 1)
     (check-equal? (enum-case structs (make-struct 'a) [(one) 1] [(two) 2] [(three) 3] [else 4]) 4))
   
+  (test-case "enum-lambda"
+    (let ([proc (enum-lambda option [(a) 10 100] [(b) 20 200] [(c) 30 300])])
+      (check-equal? (proc 1) 100)
+      (check-equal? (proc 2) 200)
+      (check-equal? (proc 3) 300)
+      (check-exn exn:fail? (cut proc 'a))))
+  
   (test-case "in-enum"
     (check-equal? (for/list ([val (in-enum option)])     val) (list 1 2 3))
     (check-equal? (for/list ([val (in-enum option a c)]) val) (list 1 3)))
