@@ -109,6 +109,11 @@
 ; (_ ([id value] ...) expr ...)
 (define-syntax (let/debug stx)
   (syntax-case stx ()
+    [(_ loop ([var val] ...) exp ...)
+     (identifier? #'loop)
+     #'(let loop ([var val] ...)
+         (debug (symbol->string 'var) val) ...
+         exp ...)]
     [(_ ([var val] ...) exp ...)
      #'(let ([var (debug (symbol->string 'var) val)] ...)
          exp ...)]))
