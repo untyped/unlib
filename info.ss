@@ -9,7 +9,8 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "added " (tt "enum-lambda") " to " (tt "enumeration.ss") "."))))
+    (ul (li "added " (tt "enum-lambda") " to " (tt "enumeration.ss") ";")
+        (li "added " (em "\"let loop\"") " form to " (tt "let/debug") "."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
