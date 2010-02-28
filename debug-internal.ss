@@ -112,7 +112,7 @@
     [(_ loop ([var val] ...) exp ...)
      (identifier? #'loop)
      #'(let loop ([var val] ...)
-         (debug (symbol->string 'var) val) ...
+         (debug (symbol->string 'var) var) ...
          exp ...)]
     [(_ ([var val] ...) exp ...)
      #'(let ([var (debug (symbol->string 'var) val)] ...)
