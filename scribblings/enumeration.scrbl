@@ -151,7 +151,7 @@ Like @scheme[case] but each @scheme[value] must be a value from @scheme[enum]. I
 @defform/subs[#:literals (else) (enum-lambda enum clause ...)
               ([clause [(value ...) expr ...]
                        [else expr ...]])]{
-Expands to a procedure that accepts a single argument and runs @shceme[enum-case] on it.
+Expands to a procedure that accepts a single argument and runs @scheme[enum-case] on it.
 
 @examples[
   #:eval enum-eval

@@ -57,8 +57,9 @@ Like @scheme[define/debug] but expands to a @scheme[define-values] form.
   (define-values/debug (a b)
     (values (+ 1 2) (+ 3 4)))]}
 
-@defform[(let/debug ([id expr] ...) expr ...)]{
-Expands to a @scheme[let] form that prints the value of each @scheme[id] as it is assigned.
+@defform*[((let/debug ([id expr] ...) expr ...)
+           (let/debug loop-id ([id expr] ...) expr ...))]{
+Expands to a @scheme[let] form that prints the value of each @scheme[id] as it is assigned. In "let loop" form, values are printed at the start of each call to @scheme[loop-id].
 
 @examples[
   #:eval debug-eval
