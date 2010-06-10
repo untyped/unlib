@@ -202,6 +202,7 @@
  time?
  time-utc?
  time-duration?
+ zone-exists?
  
  ; Accessors:
  current-time
