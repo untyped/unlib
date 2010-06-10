@@ -23,6 +23,8 @@
   (test-case "time->date"
     (check-not-exn (cut time->date (current-time time-tai)))
     (check-not-exn (cut time->date (current-time time-utc)))
+    (check-not-exn (cut time->date (current-time time-tai) 0))
+    (check-not-exn (cut time->date (current-time time-utc) 0))
     (check-exn exn:fail:contract? (cut time->date (make-time time-duration 0 0))))
   
   (test-case "time-tai?"
@@ -167,4 +169,16 @@
     (check-not-exn (cut time->ago-string (current-time time-tai) (current-time time-tai)))
     (check-not-exn (cut time->ago-string (current-time time-utc) (current-time time-utc)))
     (check-exn exn:fail:contract? (cut time->ago-string (current-time time-tai) (current-time time-utc)))
-    (check-exn exn:fail:contract? (cut time->ago-string (current-time time-utc) (current-time time-tai)))))
+    (check-exn exn:fail:contract? (cut time->ago-string (current-time time-utc) (current-time time-tai))))
+  
+  (test-case "current-time-zone-offset"
+    (check-not-exn (cut current-time-zone-offset)))
+  
+  (test-case "current-year"
+    (check-not-exn (cut current-year)))
+  
+  (test-case "time-utc->string, time-tai->string"
+    (check-not-exn  (cut time-utc->string (current-time time-utc) "~Y-~m-~d"))
+    (check-exn exn? (cut time-utc->string (current-time time-tai) "~Y-~m-~d"))
+    (check-not-exn  (cut time-tai->string (current-time time-tai) "~Y-~m-~d"))
+    (check-exn exn? (cut time-tai->string (current-time time-utc) "~Y-~m-~d"))))

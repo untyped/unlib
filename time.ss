@@ -182,19 +182,23 @@
 ; -> integer
 ; Returns the time zone offset of the current locale in seconds.
 (define (current-time-zone-offset)
-  (date-zone-offset (time-tai->date (current-time time-tai))))
+  (date-zone-offset (time-utc->date (current-time time-utc))))
 
 ; -> integer
 (define (current-year)
-  (date-year (time-tai->date (current-time time-tai))))
+  (date-year (time-utc->date (current-time time-utc))))
 
-; time-utc string -> string
-(define (time-utc->string time fmt)
-  (date->string (time-utc->date time) fmt))
+; time-utc string [integer] -> string
+(define (time-utc->string time fmt [tz #f])
+  (if tz
+      (date->string (time-utc->date time tz) fmt)
+      (date->string (time-utc->date time) fmt)))
                                            
-; time-tai string -> string
-(define (time-tai->string time fmt)
-  (date->string (time-tai->date time) fmt))
+; time-tai string [integer] -> string
+(define (time-tai->string time fmt [tz #f])
+  (if tz
+      (date->string (time-tai->date time tz) fmt)
+      (date->string (time-tai->date time) fmt)))
 
 ; Provide statements --------------------------- 
 
@@ -243,5 +247,5 @@
  [time->ago-string         (->* (time/c) (time/c #:format string? #:short? boolean?) string?)]
  [current-time-zone-offset (-> integer?)]
  [current-year             (-> integer?)]
- [time-utc->string         (-> time-utc? string? string?)]
- [time-tai->string         (-> time-tai? string? string?)])
+ [time-utc->string         (->* (time-utc? string?) (integer?) string?)]
+ [time-tai->string         (->* (time-tai? string?) (integer?) string?)])
