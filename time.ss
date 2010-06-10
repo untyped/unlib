@@ -122,6 +122,12 @@
           #t)
       #f))
 
+; integer -> natural
+(define (days-in-year year)
+  (if (leap-year? year)
+      366
+      365))
+
 ; integer [integer] -> integer
 (define (days-in-month month [year 2001]) ; non-leap-year by default
   (case month
@@ -231,7 +237,8 @@
  [date-day-of-the-week     (-> date? day-of-the-week/c)]
  [date-week-day?           (-> date? boolean?)]
  [leap-year?               (-> integer? boolean?)]
- [days-in-month            (->* (month/c) (integer?) integer?)]
+ [days-in-year             (-> integer? natural-number/c)]
+ [days-in-month            (->* (month/c) (integer?) natural-number/c)]
  [seconds->ago-string      (->* (integer?) (integer? #:format string? #:short? boolean?) string?)]
  [time->ago-string         (->* (time/c) (time/c #:format string? #:short? boolean?) string?)]
  [current-time-zone-offset (-> integer?)]
