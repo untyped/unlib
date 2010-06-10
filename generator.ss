@@ -249,7 +249,7 @@
 ;  (gen-> a)
 ;  (a -> b)
 ;  [(a -> c)]
-;  [#:initial-hash (hashof b c)]
+;  [(hashof b c)]
 ; ->
 ;  (hashof b c)
 (define (generator->hash gen item->key [item->val (lambda (x) x)] [hash (make-hash)])
