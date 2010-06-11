@@ -88,30 +88,33 @@
       (check-equal? (string->date "2011-11-06 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 06 11 2011 -25200))
       (check-equal? (string->date "2011-11-06 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 06 11 2011 -28800))))
   
-  (test-case "time-utc->date"
-    (let ([convert (compose time-utc->date date->time-utc)])
-      (parameterize ([current-tz "GB"])
-        ; Original date specified with current time zone offset:
-        (check-equal? (convert (srfi-make-date 0 00 00 00 28 03 2010    0)) (srfi-make-date 0 00 00 00 28 03 2010    0))
-        (check-equal? (convert (srfi-make-date 0 00 00 01 28 03 2010    0)) (srfi-make-date 0 00 00 02 28 03 2010 3600))
-        (check-equal? (convert (srfi-make-date 0 00 00 02 28 03 2010    0)) (srfi-make-date 0 00 00 03 28 03 2010 3600))
-        (check-equal? (convert (srfi-make-date 0 00 00 00 28 03 2010 3600)) (srfi-make-date 0 00 00 23 27 03 2010    0))
-        (check-equal? (convert (srfi-make-date 0 00 00 01 28 03 2010 3600)) (srfi-make-date 0 00 00 00 28 03 2010    0))
-        (check-equal? (convert (srfi-make-date 0 00 00 02 28 03 2010 3600)) (srfi-make-date 0 00 00 02 28 03 2010 3600))
-        ; Original date specified with different time zone offset:
-        (check-equal? (convert (srfi-make-date 0 00 00 01 28 03 2010 3600)) (srfi-make-date 0 00 00 00 28 03 2010    0))
-        (check-equal? (convert (srfi-make-date 0 00 00 02 28 03 2010    0)) (srfi-make-date 0 00 00 03 28 03 2010 3600)))
-      (parameterize ([current-tz "PST8PDT"])
-        ; Original date specified with current time zone offset:
-        (check-equal? (convert (srfi-make-date 0 00 00 01 14 03 2010 -28800)) (srfi-make-date 0 00 00 01 14 03 2010 -28800))
-        (check-equal? (convert (srfi-make-date 0 00 00 02 14 03 2010 -28800)) (srfi-make-date 0 00 00 03 14 03 2010 -25200))
-        (check-equal? (convert (srfi-make-date 0 00 00 03 14 03 2010 -28800)) (srfi-make-date 0 00 00 04 14 03 2010 -25200))
-        (check-equal? (convert (srfi-make-date 0 00 00 01 14 03 2010 -25200)) (srfi-make-date 0 00 00 00 14 03 2010 -28800))
-        (check-equal? (convert (srfi-make-date 0 00 00 02 14 03 2010 -25200)) (srfi-make-date 0 00 00 01 14 03 2010 -28800))
-        (check-equal? (convert (srfi-make-date 0 00 00 03 14 03 2010 -25200)) (srfi-make-date 0 00 00 03 14 03 2010 -25200))
-        ; Original date specified with different time zone offset:
-        (check-equal? (convert (srfi-make-date 0 00 00 02 14 03 2010 -25200)) (srfi-make-date 0 00 00 01 14 03 2010 -28800))
-        (check-equal? (convert (srfi-make-date 0 00 00 03 14 03 2010 -28800)) (srfi-make-date 0 00 00 04 14 03 2010 -25200)))))
+  (test-case "time-utc->date, time-tai->date"
+    (for ([convert   (in-list (list (compose time-utc->date date->time-utc)
+                                    (compose time-tai->date date->time-tai)))]
+          [time-type (in-list (list time-utc time-tai))])
+      (with-check-info (['time-type time-type])
+        (parameterize ([current-tz "GB"])
+          ; Original date specified with current time zone offset:
+          (check-equal? (convert (srfi-make-date 0 00 00 00 28 03 2010    0)) (srfi-make-date 0 00 00 00 28 03 2010    0))
+          (check-equal? (convert (srfi-make-date 0 00 00 01 28 03 2010    0)) (srfi-make-date 0 00 00 02 28 03 2010 3600))
+          (check-equal? (convert (srfi-make-date 0 00 00 02 28 03 2010    0)) (srfi-make-date 0 00 00 03 28 03 2010 3600))
+          (check-equal? (convert (srfi-make-date 0 00 00 00 28 03 2010 3600)) (srfi-make-date 0 00 00 23 27 03 2010    0))
+          (check-equal? (convert (srfi-make-date 0 00 00 01 28 03 2010 3600)) (srfi-make-date 0 00 00 00 28 03 2010    0))
+          (check-equal? (convert (srfi-make-date 0 00 00 02 28 03 2010 3600)) (srfi-make-date 0 00 00 02 28 03 2010 3600))
+          ; Original date specified with different time zone offset:
+          (check-equal? (convert (srfi-make-date 0 00 00 01 28 03 2010 3600)) (srfi-make-date 0 00 00 00 28 03 2010    0))
+          (check-equal? (convert (srfi-make-date 0 00 00 02 28 03 2010    0)) (srfi-make-date 0 00 00 03 28 03 2010 3600)))
+        (parameterize ([current-tz "PST8PDT"])
+          ; Original date specified with current time zone offset:
+          (check-equal? (convert (srfi-make-date 0 00 00 01 14 03 2010 -28800)) (srfi-make-date 0 00 00 01 14 03 2010 -28800))
+          (check-equal? (convert (srfi-make-date 0 00 00 02 14 03 2010 -28800)) (srfi-make-date 0 00 00 03 14 03 2010 -25200))
+          (check-equal? (convert (srfi-make-date 0 00 00 03 14 03 2010 -28800)) (srfi-make-date 0 00 00 04 14 03 2010 -25200))
+          (check-equal? (convert (srfi-make-date 0 00 00 01 14 03 2010 -25200)) (srfi-make-date 0 00 00 00 14 03 2010 -28800))
+          (check-equal? (convert (srfi-make-date 0 00 00 02 14 03 2010 -25200)) (srfi-make-date 0 00 00 01 14 03 2010 -28800))
+          (check-equal? (convert (srfi-make-date 0 00 00 03 14 03 2010 -25200)) (srfi-make-date 0 00 00 03 14 03 2010 -25200))
+          ; Original date specified with different time zone offset:
+          (check-equal? (convert (srfi-make-date 0 00 00 02 14 03 2010 -25200)) (srfi-make-date 0 00 00 01 14 03 2010 -28800))
+          (check-equal? (convert (srfi-make-date 0 00 00 03 14 03 2010 -28800)) (srfi-make-date 0 00 00 04 14 03 2010 -25200))))))
   
   ; Arithmetic -----------------------------------
   

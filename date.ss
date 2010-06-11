@@ -1,15 +1,18 @@
 #lang scheme/base
 
+(require "base.ss")
+
 (require scheme/contract
          (rename-in srfi/19
                     [make-date      srfi-make-date]
                     [date->string   srfi-date->string]
                     [string->date   srfi-string->date]
-                    [time-utc->date srfi-time-utc->date])
-         (rename-in (planet bzlib/date:1)
+                    [time-utc->date srfi-time-utc->date]
+                    [time-tai->date srfi-time-tai->date])
+         (rename-in (date-in)
                     [leap-year?     mzlib-leap-year?]
                     [date+          bzlib-date+])
-         (planet bzlib/date-tz:1)
+         (date-tz-in)
          "debug.ss"
          "time.ss")
 
@@ -62,6 +65,10 @@
 ; time-utc [#:tz string] -> date
 (define (time-utc->date time #:tz [tz (current-tz)])
   (normalize-date (srfi-time-utc->date time 0) #:tz tz))
+
+; time-tai [#:tz string] -> date
+(define (time-tai->date time #:tz [tz (current-tz)])
+  (normalize-date (srfi-time-tai->date time 0) #:tz tz))
 
 ; Date arithmetic --------------------------------
 
@@ -169,6 +176,7 @@
  [date->string   (->* (date? string?) (#:tz zone-exists?) string?)]
  [string->date   (->* (string? string?) (#:tz zone-exists?) date?)]
  [time-utc->date (->* (time-utc?) (#:tz zone-exists?) date?)]
+ [time-tai->date (->* (time-tai?) (#:tz zone-exists?) date?)]
  [date+seconds   (->* (date? integer?) (#:tz zone-exists?) date?)]
  [date+minutes   (->* (date? integer?) (#:tz zone-exists?) date?)]
  [date+hours     (->* (date? integer?) (#:tz zone-exists?) date?)]
@@ -191,9 +199,11 @@
  ; Constructors:
  make-time
  date->time-utc
+ date->time-tai
  
  ; Time types:
  time-utc
+ time-tai
  time-duration
  
  ; Predicates:
@@ -201,6 +211,7 @@
  date-week-day?
  time?
  time-utc?
+ time-tai?
  time-duration?
  zone-exists?
  
@@ -219,6 +230,8 @@
  date-nanosecond
  date-zone-offset
  date-week-day
+ date-week-day?
+ date-day-of-week
  
  ; Comparisons:
  time<?
@@ -234,7 +247,13 @@
  
  ; Conversions:
  date->time-utc
+ date->time-tai
  
  ; Utilities:
  current-tz
- tz-names)
+ current-year
+ current-time-zone-offset
+ tz-names
+ leap-year?
+ days-in-year
+ days-in-month)
