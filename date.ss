@@ -282,6 +282,7 @@
  date->time-tai
  
  ; Utilities:
+ time->ago-string
  current-tz
  current-year
  current-time-zone-offset
