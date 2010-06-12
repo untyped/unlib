@@ -8,8 +8,7 @@
   '("A set of utilities developed by Untyped."))
 
 (define release-notes
-  '((p "Changes and additions:")
-    (ul (li "fixed documentation bug for " (tt "cache.ss") "."))))
+  '((p "Changes and additions...")))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
