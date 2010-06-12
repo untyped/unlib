@@ -1,6 +1,6 @@
 #lang scribble/doc
 
-@(require (file "base.ss"))
+@(require "base.ss")
 
 @(define-eval url-eval net/url (planet untyped/unlib/url))
 
