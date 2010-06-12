@@ -59,6 +59,48 @@
       (check-equal? (make-date 0 00 00 01 06 11 2011) (srfi-make-date 0 00 00 01 06 11 2011 -25200))
       (check-equal? (make-date 0 00 00 02 06 11 2011) (srfi-make-date 0 00 00 02 06 11 2011 -28800))))
   
+  (test-case "copy-date"
+    (parameterize ([current-tz "GB"])
+      (let ([date (make-date 0 00 00 00 01 01 2000)])
+        (check-equal? (copy-date date
+                                 #:nanosecond 1
+                                 #:second     2
+                                 #:minute     3
+                                 #:hour       4
+                                 #:day        5
+                                 #:month      3
+                                 #:year       2007)
+                      (srfi-make-date 1 02 03 04 05 03 2007 0))
+        (check-equal? (copy-date date
+                                 #:nanosecond 1
+                                 #:second     2
+                                 #:minute     3
+                                 #:hour       4
+                                 #:day        5
+                                 #:month      6
+                                 #:year       2007)
+                      (srfi-make-date 1 02 03 04 05 06 2007 3600))))
+    (parameterize ([current-tz "PST8PDT"])
+      (let ([date (make-date 0 00 00 00 01 01 2000)])
+        (check-equal? (copy-date date
+                                 #:nanosecond 1
+                                 #:second     2
+                                 #:minute     3
+                                 #:hour       4
+                                 #:day        5
+                                 #:month      3
+                                 #:year       2007)
+                      (srfi-make-date 1 02 03 04 05 03 2007 -28800))
+        (check-equal? (copy-date date
+                                 #:nanosecond 1
+                                 #:second     2
+                                 #:minute     3
+                                 #:hour       4
+                                 #:day        5
+                                 #:month      6
+                                 #:year       2007)
+                      (srfi-make-date 1 02 03 04 05 06 2007 -25200)))))
+  
   (test-case "date->string"
     ; Dates specified with the local time zone offset:
     (check-equal? (date->string (make-date 0 00 00 00 28 03 2010) "~Y-~m-~d ~H:~M") "2010-03-28 00:00")

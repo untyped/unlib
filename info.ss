@@ -22,4 +22,6 @@
 
 (define compile-omit-paths
   '("autoplanet.ss"
-    "build.ss"))
+    "build.ss"
+    "planet"
+    "planetdev"))

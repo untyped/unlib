@@ -14,7 +14,7 @@
                     [date+          bzlib-date+])
          (date-tz-in)
          "debug.ss"
-         "time.ss")
+         (except-in "time.ss" copy-date))
 
 ; Token geographical bias:
 (current-tz "GB")
@@ -69,6 +69,28 @@
 ; time-tai [#:tz string] -> date
 (define (time-tai->date time #:tz [tz (current-tz)])
   (normalize-date (srfi-time-tai->date time 0) #:tz tz))
+
+;  date
+;  [#:nanosecond natural]
+;  [#:second     natural]
+;  [#:minute     natural]
+;  [#:hour       natural]
+;  [#:day        natural]
+;  [#:month      natural]
+;  [#:year       integer]
+;  [#:tz         string]
+; ->
+;  date
+(define (copy-date date
+                   #:nanosecond [nanosecond (date-nanosecond date)]
+                   #:second     [second     (date-second     date)]
+                   #:minute     [minute     (date-minute     date)]
+                   #:hour       [hour       (date-hour       date)]
+                   #:day        [day        (date-day        date)]
+                   #:month      [month      (date-month      date)]
+                   #:year       [year       (date-year       date)]
+                   #:tz         [tz         (current-tz)])
+  (make-date nanosecond second minute hour day month year #:tz tz))
 
 ; Date arithmetic --------------------------------
 
@@ -173,6 +195,16 @@
 
 (provide/contract
  [make-date      (->* (integer? integer? integer? integer? integer? integer? integer?) (#:tz zone-exists?) date?)]
+ [copy-date      (->* (date?)
+                      (#:nanosecond natural-number/c
+                                    #:second natural-number/c
+                                    #:minute natural-number/c
+                                    #:hour   natural-number/c
+                                    #:day    natural-number/c
+                                    #:month  natural-number/c
+                                    #:year   integer?
+                                    #:tz     string?)
+                      date?)]
  [date->string   (->* (date? string?) (#:tz zone-exists?) string?)]
  [string->date   (->* (string? string?) (#:tz zone-exists?) date?)]
  [time-utc->date (->* (time-utc?) (#:tz zone-exists?) date?)]
