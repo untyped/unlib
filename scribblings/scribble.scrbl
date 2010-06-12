@@ -1,6 +1,6 @@
 #lang scribble/doc
 
-@(require (file "base.ss")
+@(require "base.ss"
           (for-label scribble/eval))
 
 @title[#:tag "scribble"]{Scribble utilities}

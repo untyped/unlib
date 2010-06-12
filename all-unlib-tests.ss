@@ -6,6 +6,7 @@
          "convert-test.ss"
          "contract-test.ss"
          "crc-test.ss"
+         "date-test.ss"
          "debug-test.ss"
          "enum-test.ss"
          "enumeration-test.ss"
@@ -43,6 +44,7 @@
   contract-tests
   convert-tests
   crc-tests
+  date-tests
   debug-tests
   enum-tests
   enumeration-tests

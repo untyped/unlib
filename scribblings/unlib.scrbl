@@ -1,23 +1,22 @@
 #lang scribble/doc
 
-@(require (file "base.ss"))
+@(require "base.ss")
 
 @title{@bold{Unlib:} Helpful Utilities from Untyped}
 
-Dave Gurnell, Noel Welsh, David Brooks and Matt Jadud
+Dave Gurnell, Noel Welsh, David Brooks, and Matt Jadud
 
 @tt{{dave, noel, djb, matt} at @link["http://www.untyped.com"]{@tt{untyped}}}
 
-@italic{Unlib} is a collection of general utilities for programming applications in PLT Scheme.
-At Untyped we mostly write web software, so expect to find useful utilities for that kind of thing.
+@italic{Unlib} is a collection of general programming utilities. At Untyped we mostly write web software, so expect to find useful utilities for that kind of thing.
 
-Unlib contains a few more modules than listed here. There are several experimental libraries that we developed in the past that have been superseded or partially retired. Expect anything not documented here to change or disappear in the future.
+Unlib contains more modules than are listed here. Expect anything undocumented to change or disappear in the future.
 
 @bold{Please see the section on @secref["version-4"] for information on forthcoming backwards-incompatible changes.}
 
 @section[#:tag "version-4"]{Changes in Unlib 4.x}
 
-Unlib 3.x contains some legacy code that will be removed in Unlib 4.x. In most cases an upgrade path already exists that will prevent future problems:
+Unlib 3.x contains some legacy code that will be removed in Unlib 4.x. In most cases an upgrade path exists that will prevent future problems:
 
 @itemize{
   @item{support for the @scheme[mzscheme] language will be dropped;}
@@ -43,6 +42,7 @@ Unlib 3.x contains some legacy code that will be removed in Unlib 4.x. In most c
 @include-section{cache.scrbl}
 @include-section{contract.scrbl}
 @include-section{crc.scrbl}
+@include-section{date.scrbl}
 @include-section{debug.scrbl}
 @include-section{enum.scrbl}
 @include-section{enumeration.scrbl}

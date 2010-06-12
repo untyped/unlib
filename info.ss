@@ -8,9 +8,7 @@
   '("A set of utilities developed by Untyped."))
 
 (define release-notes
-  '((p "Changes and additions:")
-    (ul (li "added " (tt "enum-lambda") " to " (tt "enumeration.ss") ";")
-        (li "added " (em "\"let loop\"") " form to " (tt "let/debug") "."))))
+  '((p "Changes and additions...")))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
@@ -21,3 +19,7 @@
 (define categories            '(devtools))
 (define required-core-version "4.0.2.5")
 (define repositories          '("4.x"))
+
+(define compile-omit-paths
+  '("autoplanet.ss"
+    "build.ss"))
