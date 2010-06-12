@@ -1,6 +1,6 @@
 #lang scribble/doc
 
-@(require (file "base.ss"))
+@(require "base.ss")
 
 @title[#:tag "log"]{Logging utilities}
 
