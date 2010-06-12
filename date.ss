@@ -231,7 +231,7 @@
  date-zone-offset
  date-week-day
  date-week-day?
- date-day-of-week
+ date-day-of-the-week
  
  ; Comparisons:
  time<?
