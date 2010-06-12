@@ -1,4 +1,3 @@
-
 #lang scribble/doc
 
 @(require "base.ss")
