@@ -3,7 +3,7 @@ Unlib
 
 Developed by Untyped.
 
-Helpful utilities for programming in [Racket][1].
+Helpful utilities for [Racket][1].
 
 Copyright 2006 to 2010 Untyped.
 
