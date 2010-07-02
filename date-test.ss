@@ -130,6 +130,16 @@
       (check-equal? (string->date "2011-11-06 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 06 11 2011 -25200))
       (check-equal? (string->date "2011-11-06 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 06 11 2011 -28800))))
   
+  (test-case "string->date : omitting day/month/year (see comments for details)"
+    (parameterize ([current-tz "PST8PDT"])
+      ; Two rules:
+      ;   - missing date components should be 0, not #t as returned by SRFI 19's string->date;
+      ;   - if any date components are missing, the time zone should be 0.
+      (check-equal? (string->date "01:02"            "~H:~M")          (srfi-make-date 0 00 02 01 00 00 0000 -28800))
+      (check-equal? (string->date "01:02 03"         "~H:~M ~d")       (srfi-make-date 0 00 02 01 03 00 0000 -28800))
+      (check-equal? (string->date "01:02 03/04"      "~H:~M ~d/~m")    (srfi-make-date 0 00 02 01 03 04 0000 -28800))
+      (check-equal? (string->date "01:02 03/04/2005" "~H:~M ~d/~m/~Y") (srfi-make-date 0 00 02 01 03 04 2005 -28800))))
+  
   (test-case "time-utc->date, time-tai->date"
     (for ([convert   (in-list (list (compose time-utc->date date->time-utc)
                                     (compose time-tai->date date->time-tai)))]

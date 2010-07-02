@@ -57,9 +57,11 @@
                (date-second temp)
                (date-minute temp)
                (date-hour temp)
-               (date-day temp)
-               (date-month temp)
-               (date-year temp)
+               ; For some reason, SRFI 19's string->date creates a date struct with a default day, month and year of #t.
+               ; To prevent problems with maths, we set any missing components to 0:
+               (number+any->number (date-day   temp) 0)
+               (number+any->number (date-month temp) 0)
+               (number+any->number (date-year  temp) 0)
                #:tz tz)))
 
 ; time-utc [#:tz string] -> date
@@ -190,6 +192,12 @@
         [else          (if (= month 1)
                            (months->days (add1 count) (sub1 year) 12 (- accum (days-in-month 12 (sub1 year))))
                            (months->days (add1 count) year (sub1 month) (- accum (days-in-month (sub1 month) year))))]))
+
+; (U number any) [number]-> number
+(define (number+any->number val [default 0])
+  (if (number? val)
+      val
+      default))
 
 ; Provides ---------------------------------------
 
