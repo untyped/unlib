@@ -40,4 +40,8 @@ A version of @scheme[number->string] that accepts and passes through @scheme[#f]
 
 A version of @scheme[string->number] that accepts and passes through @scheme[#f].}
 
+@defproc[(round-to [num number?] [n integer? 0]) inexact?]{
+
+Rounds @scheme[num] to @scheme[n] decimal places. @scheme[n] can be negative.}
+
 } @;{end defmodule}

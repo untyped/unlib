@@ -88,7 +88,9 @@
 (provide symbol+false->string+false
          string+false->symbol+false
          string+false->number+false
-         number+false->string+false)
+         number+false->string+false
+         natural->hex-string
+         hex-string->natural)
 
 (provide/contract
  [string+false?       procedure?]

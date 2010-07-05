@@ -1,7 +1,8 @@
 #lang scheme/base
 
-(require "base.ss"
-         "convert.ss")
+(require "base.ss")
+
+(require "convert.ss")
 
 ; Procedures -------------------------------------
 
@@ -22,15 +23,27 @@
 (define (natural+false? item)
   (or (natural? item) (not item)))
 
+; number [integer] -> inexact
+(define (round-to num [places 0])
+  (let ([exp (for/fold ([accum 1])
+                       ([num   (in-range 0 (abs places))])
+                       (* accum 10))])
+    (if (>= places 0)
+        (/ (round (* (exact->inexact num) exp)) exp)
+        (round (* (round (/ (exact->inexact num) exp)) exp)))))
+
 ; Provide statements -----------------------------
 
 (provide symbol+false->number+false
          number+false->symbol+false
          string+false->number+false
-         number+false->string+false)
+         number+false->string+false
+         natural->hex-string
+         hex-string->natural)
 
 (provide/contract
  [number+false?  procedure?]
  [integer+false? procedure?]
  [natural?       procedure?]
- [natural+false? procedure?])
+ [natural+false? procedure?]
+ [round-to       (->* (number?) (integer?) inexact?)])

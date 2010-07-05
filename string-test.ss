@@ -41,4 +41,14 @@
   (test-case "string-sentencecase"
     (check-equal? (string-sentencecase "lowercase to capitalised")      "Lowercase to capitalised")
     (check-equal? (string-sentencecase "Capitalised stays capitalised") "Capitalised stays capitalised")
-    (check-equal? (string-sentencecase "ALLCAPS stays ALLCAPSED")       "ALLCAPS stays ALLCAPSED")))
+    (check-equal? (string-sentencecase "ALLCAPS stays ALLCAPSED")       "ALLCAPS stays ALLCAPSED"))
+  
+  (test-case "reprovided identifiers from convert.ss"
+    (for-each (lambda (proc)
+                (check-pred procedure? proc))
+              (list number+false->string+false
+                    string+false->number+false
+                    string+false->symbol+false
+                    symbol+false->string+false
+                    natural->hex-string
+                    hex-string->natural))))

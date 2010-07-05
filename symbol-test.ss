@@ -35,4 +35,10 @@
   
   (test-equal? "symbol-downcase"
     (symbol-downcase 'aBcDe12345)
-    'abcde12345))
+    'abcde12345)
+  
+  (test-case "reprovided identifiers from convert.ss"
+    (for-each (lambda (proc)
+                (check-pred procedure? proc))
+              (list number+false->symbol+false
+                    symbol+false->number+false))))

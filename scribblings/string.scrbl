@@ -87,4 +87,19 @@ A version of @scheme[string->symbol] that accepts and passes through @scheme[#f]
 
 A version of @scheme[symbol->string] that accepts and passes through @scheme[#f].}
 
+@defproc[(natural->hex-string [num natural?] [#:uppercase? uppercase? boolean? #f] [#:digits digits natural? 1] [#:prefix? prefix? boolean? #f]) natural?]{
+
+Converts a natural number to a hexadecimal string. Arguments:
+
+@itemize{
+  @item{@scheme[uppercase?] - generate uppercase strings (the default is lowercase);}
+  @item{@scheme[digits] - pad the string to a certain number of hexadecimal digits (only pads the string - does not trim it);}
+  @item{@scheme[prefix?] - generate strings with a @scheme["0x"] prefix (the default is unprefixed).}}}
+
+@defproc[(hex-string->natural [str string?] [#:prefix? prefix? boolean? #f]) natural?]{
+
+Converts a hexadecimal string like @scheme["ff"] to a natural number. Case insensitive.
+
+Set @scheme[prefix?] to @scheme[#t] to accept strings with a @scheme["0x"] prefix.}
+
 } @;{end defmodule}

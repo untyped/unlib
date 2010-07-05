@@ -8,7 +8,9 @@
   '("A set of utilities developed by Untyped."))
 
 (define release-notes
-  '((p "Changes and additions...")))
+  '((p "Changes and additions:")
+    (ul (li "added " (tt "round-to") " to " (tt "number.ss") ";")
+        (li "added " (tt "natural->hex-string") " and " (tt "hex-string->natural") " to " (tt "number.ss") " and " (tt "string.ss") "."))))
 
 (define scribblings
   '(("scribblings/unlib.scrbl" (multi-page))))
