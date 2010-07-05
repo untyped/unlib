@@ -39,7 +39,7 @@ ENDSCRIPT
 
 (define (compile)
   (autoplanet)
-  (system "mzc -v main.ss"))
+  (system "mzc -v run-tests.ss"))
 
 (define (test-compile)
   (autoplanet)
@@ -49,8 +49,13 @@ ENDSCRIPT
   (test-compile)
   (system "mzscheme run-tests.ss"))
 
+(define (docs)
+  (autoplanet)
+  (system "scribble ++xref-in setup/xref load-collections-xref --htmls scribblings/unlib.scrbl"))
+
 (match (vector-ref (current-command-line-arguments) 0)
   ["envvars"         (envvars)]
   ["compile"         (compile)]
   ["test-compile"    (test-compile)]
-  ["test"            (test)])
+  ["test"            (test)]
+  ["docs"            (docs)])
