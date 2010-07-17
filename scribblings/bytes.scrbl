@@ -10,7 +10,7 @@ Useful bytes utilities.
 
 @defproc[(bytes+false? [item any]) boolean?]{
 
-Returns @scheme[#t] if @scheme[item] is a bytes and @scheme[#f] otherwise.}
+Returns @scheme[#t] if @scheme[item] is a bytes or @scheme[#f], and @scheme[#f] otherwise.}
 
 @defproc[(ensure-bytes [item any]) any]{
 
