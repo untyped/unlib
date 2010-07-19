@@ -20,9 +20,9 @@ Boolean parameter for enabling or disabling the printing of debugging informatio
 
 Parameter controlling the formatting of printed debugging information. Value must be a procedure that takes a message and a value and returns void. The default value prints the message and a colon on one line and pretty-prints the value (slightly indented) on subsequent lines.}
 
-@defproc[(debug [val any]) any]{
+@defproc[(debug [message string?] [val any]) any]{
 
-Prints @scheme[val] and returns it transparently.
+Prints @scheme[message], followed by a colon; then prints @scheme[val] and returns it transparently.
 
 @examples[
   #:eval debug-eval
@@ -31,9 +31,9 @@ Prints @scheme[val] and returns it transparently.
                    (for/list ([i '(1 2 3 4 5)])
                      i))))]}
 
-@defproc[(debug* [proc procedure?] [arg any] ...) any]{
+@defproc[(debug* [message string?] [proc procedure?] [arg any] ...) any]{
 
-Applies @scheme[proc] to @scheme[arg]@schemeidfont{s} and prints and returns the return value transparently.
+Applies @scheme[proc] to @scheme[arg]@schemeidfont{s} and prints and returns the return value transparently using @scheme[debug].
 
 @examples[
   #:eval debug-eval
