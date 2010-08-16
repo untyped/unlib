@@ -272,6 +272,7 @@
  date-week-day
  date-week-day?
  date-day-of-the-week
+ date-year-day
  
  ; Comparisons:
  time<?
