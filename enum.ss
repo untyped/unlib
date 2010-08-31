@@ -132,7 +132,7 @@
                  (unless (andmap valid-enum-value? values)
                    (raise-exn exn:fail:contract
                      (format "Bad enum values: expected (listof (U boolean symbol integer)), received ~a" values)))
-                 (make-enum 'enum values pretty-values)))
+                 (make-enum 'enum values pretty-values eq?)))
              ; (U boolean symbol integer) ...
              (define-values (value-id ...)
                (apply values (enum-values enum)))

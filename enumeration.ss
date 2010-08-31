@@ -22,11 +22,12 @@
   (define value-id-stxs null)   ; (listof syntax)
   (define value-expr-stxs null) ; (listof syntax)
   (define pretty-stxs null)     ; (listof syntax)
+  (define equality-test-stx #f) ; syntax
   
   ; syntax syntax -> void
-  (define (parse-values stx)
+  (define (parse-values stx other-stx)
     (syntax-case stx ()
-      [() (parse-finish)]
+      [() (parse-keywords other-stx)]
       [([id temp-val str] other ...)
        (identifier? #'id)
        ; Treat value of _ specially:
@@ -34,20 +35,32 @@
          (set! value-id-stxs   (cons #'id value-id-stxs))
          (set! value-expr-stxs (cons #'val value-expr-stxs))
          (set! pretty-stxs     (cons #'str pretty-stxs))
-         (parse-values #'(other ...)))]
+         (parse-values #'(other ...) other-stx))]
       [([id val] other ...)
        (identifier? #'id)
        (with-syntax ([str (format "~a" (syntax->datum #'id))])
-         (parse-values #'([id val str] other ...)))]
+         (parse-values #'([id val str] other ...) other-stx))]
       [([id] other ...)
        (identifier? #'id)
        (with-syntax ([str (format "~a" (syntax->datum #'id))])
-         (parse-values #'([id 'id str] other ...)))]
+         (parse-values #'([id 'id str] other ...) other-stx))]
       [(id other ...)
        (identifier? #'id)
-       (parse-values #'([id] other ...))]
+       (parse-values #'([id] other ...) other-stx)]
       [(bad-clause other ...)
        (raise-syntax-error #f "bad enum clause" complete-stx #'bad-clause)]))
+  
+  (define (parse-keywords stx)
+    (syntax-case stx ()
+      [() (parse-finish)]
+      [(#:equality-test proc other ...)
+       (if equality-test-stx
+           (raise-syntax-error #f "#:equality-test specified multiple times" complete-stx #'(#:equality-test proc))
+           (begin (set! equality-test-stx #'proc)
+                  (parse-keywords #'(other ...))))]
+      [(kw other ...)
+       (keyword? (syntax->datum #'kw))
+       (raise-syntax-error #f "unrecognised define-enum keyword" complete-stx #'kw)]))
   
   (define (parse-finish)
     (with-syntax ([id                     id-stx]
@@ -55,8 +68,10 @@
                   [(value-id ...)         (reverse value-id-stxs)]
                   [(value-private-id ...) (generate-temporaries (reverse value-id-stxs))]
                   [(value ...)            (reverse value-expr-stxs)]
-                  [(pretty ...)           (reverse pretty-stxs)])
-      #'(begin
+                  [(pretty ...)           (reverse pretty-stxs)]
+                  [equality-test          (or equality-test-stx #'eq?)])
+      (syntax/loc complete-stx
+        (begin
           (define value-private-id value) ...
           
           (define private-id
@@ -67,7 +82,8 @@
                      (if (string? temp)
                          temp
                          (raise-type-error 'define-enum "pretty value must be a string" pretty)))
-                   ...)))
+                   ...)
+             equality-test))
           
           (define-syntaxes (id)
             (let ([certify (syntax-local-certifier #t)])
@@ -76,13 +92,13 @@
                 (certify #'id)
                 (certify #'private-id)
                 (list (certify #'value-id) ...)
-                (list (certify #'value-private-id) ...))))))))
+                (list (certify #'value-private-id) ...)))))))))
   
   (syntax-case complete-stx ()
-    [(_ id (value ...))
+    [(_ id (value ...) kw ...)
      (identifier? #'id)
      (begin (set! id-stx #'id)
-            (parse-values #'(value ...)))]))
+            (parse-values #'(value ...) #'(kw ...)))]))
 
 (define-syntax (enum-list stx)
   (syntax-case stx ()
@@ -152,8 +168,8 @@
        (with-syntax ([(unused-id ...) (find-unused-ids info #'((value-id ...) ...))])
          (syntax/loc complete-stx
            (match id
-             [(or (eq? (enum-id value-id)) ...) expr ...] ...
-             [(or (eq? (enum-id unused-id)) ...) else-expr ...]
+             [(or (? (cut enum-same? enum-id (enum-id value-id)  <>)) ...) expr ...] ...
+             [(or (? (cut enum-same? enum-id (enum-id unused-id) <>)) ...) else-expr ...]
              [other else-expr ...]))))]
     
     ; Expression has no 'else' clause:
@@ -164,7 +180,7 @@
        (check-completeness info #'((value-id ...) ...))
        (syntax/loc complete-stx
          (match id
-           [(or (eq? (enum-id value-id)) ...) expr ...] ...
+           [(or (? (cut enum-same? enum-id (enum-id value-id) <>)) ...) expr ...] ...
            [other (error (format "enum-case ~a: value not in enumeration" 'enum-id)
                          other)])))]))
 

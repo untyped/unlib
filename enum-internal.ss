@@ -13,8 +13,8 @@
 
 ; Structure types --------------------------------
 
-; (struct symbol (listof symbol) (listof string))
-(define-struct enum (name values pretty-values) #:transparent)
+; (struct symbol (listof any) (listof string) (any any -> boolean))
+(define-struct enum (name values pretty-values equality-test) #:transparent)
 
 ; Accessors and mutators -------------------------
 
@@ -28,7 +28,9 @@
 
 ; enum any -> boolean
 (define (enum-value? enum value)
-  (and (memq value (enum-values enum)) #t))
+  (and (memf (cut enum-same? enum <> value)
+             (enum-values enum))
+       #t))
 
 ; enum -> contract
 (define (enum-value/c enum)
@@ -49,10 +51,14 @@
                        (format "(U ~a)" (enum->string enum " "))
                        value)])
   (or (for/or ([val (enum-values enum)] [str (enum-pretty-values enum)])
-        (and (eq? val value) str))
+        (and (enum-same? enum val value) str))
       (if (procedure? default)
           (default)
           default)))
+
+; enum any any -> boolean
+(define (enum-same? enum a b)
+  ((enum-equality-test enum) a b))
 
 ; Helpers ----------------------------------------
 
@@ -60,17 +66,21 @@
 (define (enum-value->string val)
   (cond [(boolean? val) (if val "yes" "no")]
         [(symbol? val)  (symbol->string val)]
-        [(integer? val) (number->string val)]))
+        [(integer? val) (number->string val)]
+        [(string? val)  val]
+        [else           (format "~a" val)]))
 
 ; Provide statements -----------------------------
 
 (provide/contract
  [struct enum ([name          symbol?]
                [values        list?]
-               [pretty-values (listof string?)])]
+               [pretty-values (listof string?)]
+               [equality-test (-> any/c any/c boolean?)])]
  [enum->string        (->* (enum?) (string?) string?)]
  [enum->pretty-string (->* (enum?) (string?) string?)]
  [enum-value?         (-> enum? any/c boolean?)]
  [enum-value/c        (-> enum? flat-contract?)]
  [enum-value+false?   (-> enum? any/c boolean?)]
- [enum-prettify       (->* (enum? any/c) ((or/c string? (-> string?))) string?)])
+ [enum-prettify       (->* (enum? any/c) ((or/c string? (-> string?))) string?)]
+ [enum-same?          (-> enum? any/c any/c boolean?)])

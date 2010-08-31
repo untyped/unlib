@@ -9,7 +9,9 @@
 
 (define release-notes
   '((p "Changes and additions:")
-    (ul (li "added " (tt "round-to") " to " (tt "number.ss") ";")
+    (ul (li "added optional " (tt "#:equality-test") " argument to " (tt "define-enum") " form in " 
+            (tt "enumeration.ss") ", paving the way for string enumerations;")
+        (li "added " (tt "round-to") " to " (tt "number.ss") ";")
         (li "added " (tt "natural->hex-string") " and " (tt "hex-string->natural") " to " (tt "number.ss") " and " (tt "string.ss") ";")
         (li "documentation fixes (thanks to Eric Hanchrow for spotting these)."))))
 

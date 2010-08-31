@@ -12,8 +12,9 @@ Utilities for defining simple enumerations of booleans, symbols and integers. Th
 
 @defstruct[enum ([name symbol?]
                  [values        (listof (U boolean? symbol? integer?))]
-                 [pretty-values (listof string?)])]{
-An enumeration. For each symbol in @scheme[values] there is a human-readable string equivalent in @scheme[pretty-values].}
+                 [pretty-values (listof string?)]
+                 [equality-test (any any -> boolean?)])]{
+An enumeration. For each symbol in @scheme[values] there is a human-readable string equivalent in @scheme[pretty-values]. @scheme[equality-test] (which is typically @scheme[eq?]} is used to check for equality of pairs of values, and thus also for membership of the enumeration.}
                                                    
 @defform/subs[#:literals (_) (define-enum enum-id (value-clause ...) keyword-arg ...)
               ([value-clause value-id
@@ -22,7 +23,7 @@ An enumeration. For each symbol in @scheme[values] there is a human-readable str
                [value-expr   any
                              _]
                [pretty-expr  string?]
-               [keyword-arg (code:line #:plural id)])]{
+               [keyword-arg (code:line #:equality-test id)])]{
 Binds @scheme[enum-id] to an @italic{enumeration macro} that can be used:
 
 @itemize{
@@ -55,7 +56,9 @@ The identifier @scheme[_] can be used as a @scheme[value-expr] as a shorthand fo
   (options c)
   (map (lambda (val)
          (enum-prettify options val))
-       (list (options a) (options b) (options c)))]}
+       (list (options a) (options b) (options c)))]
+
+Finally, the @scheme[#:equality-test] keyword can be used to specify the predicate that is used to check whether values belong to the enumeration. The default predicate is @scheme[eq?].}
   
 @defproc[(enum->string [enum enum?] [separator string? ", "]) string?]{
 Returns a string representation of @scheme[(enum-values enum)], useful for including in debugging output. @scheme[separator] is used to separate the enum values in the return value.
@@ -75,6 +78,15 @@ Returns a string representation of @scheme[(enum-pretty-values enum)], useful fo
 
 @defproc[(enum-value? [enum enum?] [value any]) boolean?]{
 Returns @scheme[#t] if @scheme[value] is a member of @scheme[(enum-values enum)].
+
+@examples[
+  #:eval enum-eval
+  (define-enum vehicle (car boat plane))
+  (enum-value? vehicle 'car)
+  (enum-value? vehicle 'apple)]}
+
+@defproc[(enum-same? [enum enum?] [value1 any] [value2 any]) boolean?]{
+Uses the @scheme[enum-equality-test] in @scheme[enum] to determine if @scheme[value1] and @scheme[value2] are equal.}
 
 @defproc[(enum-value/c [enum enum?]) flat-contract?]{
 Returns a contract that accepts values from @scheme[(enum-values enum)].}
@@ -100,12 +112,6 @@ Like @scheme[in-list] but iterates through the pretty versions of @scheme[(enum-
     val)]
   (for/list ([val (in-enum vehicle car plane)])
     val)]}
-
-@examples[
-  #:eval enum-eval
-  (define-enum vehicle (car boat plane))
-  (enum-value? vehicle 'car)
-  (enum-value? vehicle 'apple)]}
 
 @defproc[(enum-prettify [enum    enum?]
                         [value   symbol?]
