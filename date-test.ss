@@ -37,26 +37,34 @@
   
   (test-case "make-date"
     ; Day before and day of a TZ change in GB:
-    ; GB changes from GMT to BST and from BST to GMT at 1am GMT:
+    ; GB changes from GMT to BST and from BST to GMT at 1am GMT.
+    ;
+    ; We check an hour before and an hour after each change to make sure the correct time zones are returned.
+    ; If we were to check the hour of the change, our current time zone is selected so the results of the test vary
+    ; depending on when we run it.
     (parameterize ([current-tz "GB"])
-      (check-equal? (make-date 0 00 00 01 28 03 2010) (srfi-make-date 0 00 00 01 28 03 2010    0))
+      (check-equal? (make-date 0 00 00 00 28 03 2010) (srfi-make-date 0 00 00 00 28 03 2010    0))
       (check-equal? (make-date 0 00 00 02 28 03 2010) (srfi-make-date 0 00 00 02 28 03 2010 3600))
-      (check-equal? (make-date 0 00 00 01 31 10 2010) (srfi-make-date 0 00 00 01 31 10 2010 3600))
+      (check-equal? (make-date 0 00 00 00 31 10 2010) (srfi-make-date 0 00 00 00 31 10 2010 3600))
       (check-equal? (make-date 0 00 00 02 31 10 2010) (srfi-make-date 0 00 00 02 31 10 2010    0))
-      (check-equal? (make-date 0 00 00 01 27 03 2011) (srfi-make-date 0 00 00 01 27 03 2011    0))
+      (check-equal? (make-date 0 00 00 00 27 03 2011) (srfi-make-date 0 00 00 00 27 03 2011    0))
       (check-equal? (make-date 0 00 00 02 27 03 2011) (srfi-make-date 0 00 00 02 27 03 2011 3600))
-      (check-equal? (make-date 0 00 00 01 30 10 2011) (srfi-make-date 0 00 00 01 30 10 2011 3600))
+      (check-equal? (make-date 0 00 00 00 30 10 2011) (srfi-make-date 0 00 00 00 30 10 2011 3600))
       (check-equal? (make-date 0 00 00 02 30 10 2011) (srfi-make-date 0 00 00 02 30 10 2011    0)))
     ; Hour before and hour of a TZ change in PST8PDT.
     ; PST8PDT changes from normal to DST at 2am normal, and DST to normal at 2am DST.
+    ;
+    ; We check an hour before and an hour after each change to make sure the correct time zones are returned.
+    ; If we were to check the hour of the change, our current time zone is selected so the results of the test vary
+    ; depending on when we run it.
     (parameterize ([current-tz "PST8PDT"])
-      (check-equal? (make-date 0 00 00 02 14 03 2010) (srfi-make-date 0 00 00 02 14 03 2010 -28800))
+      (check-equal? (make-date 0 00 00 01 14 03 2010) (srfi-make-date 0 00 00 01 14 03 2010 -28800))
       (check-equal? (make-date 0 00 00 03 14 03 2010) (srfi-make-date 0 00 00 03 14 03 2010 -25200))
-      (check-equal? (make-date 0 00 00 01 07 11 2010) (srfi-make-date 0 00 00 01 07 11 2010 -25200))
+      (check-equal? (make-date 0 00 00 00 07 11 2010) (srfi-make-date 0 00 00 00 07 11 2010 -25200))
       (check-equal? (make-date 0 00 00 02 07 11 2010) (srfi-make-date 0 00 00 02 07 11 2010 -28800))
-      (check-equal? (make-date 0 00 00 02 13 03 2011) (srfi-make-date 0 00 00 02 13 03 2011 -28800))
+      (check-equal? (make-date 0 00 00 01 13 03 2011) (srfi-make-date 0 00 00 01 13 03 2011 -28800))
       (check-equal? (make-date 0 00 00 03 13 03 2011) (srfi-make-date 0 00 00 03 13 03 2011 -25200))
-      (check-equal? (make-date 0 00 00 01 06 11 2011) (srfi-make-date 0 00 00 01 06 11 2011 -25200))
+      (check-equal? (make-date 0 00 00 00 06 11 2011) (srfi-make-date 0 00 00 00 06 11 2011 -25200))
       (check-equal? (make-date 0 00 00 02 06 11 2011) (srfi-make-date 0 00 00 02 06 11 2011 -28800))))
   
   (test-case "copy-date"
@@ -103,31 +111,41 @@
   
   (test-case "date->string"
     ; Dates specified with the local time zone offset:
+    ;
+    ; We check an hour before and an hour after each change to make sure the correct time zones are returned.
+    ; If we were to check the hour of the change, our current time zone is selected so the results of the test vary
+    ; depending on when we run it.
     (check-equal? (date->string (make-date 0 00 00 00 28 03 2010) "~Y-~m-~d ~H:~M") "2010-03-28 00:00")
-    (check-equal? (date->string (make-date 0 00 00 01 28 03 2010) "~Y-~m-~d ~H:~M") "2010-03-28 02:00")
+    ;(check-equal? (date->string (make-date 0 00 00 01 28 03 2010) "~Y-~m-~d ~H:~M") "2010-03-28 02:00") ; this is the hour of the change
     (check-equal? (date->string (make-date 0 00 00 02 28 03 2010) "~Y-~m-~d ~H:~M") "2010-03-28 02:00")
     ; Dates specified with other offsets:
     (check-equal? (date->string (srfi-make-date 0 00 00 09 01 01 2010 3600) "~Y-~m-~d ~H:~M") "2010-01-01 08:00")
     (check-equal? (date->string (srfi-make-date 0 00 00 09 01 07 2010    0) "~Y-~m-~d ~H:~M") "2010-07-01 10:00"))
   
   (test-case "string->date"
+    ; We check an hour before and an hour after each change to make sure the correct time zones are returned.
+    ; If we were to check the hour of the change, our current time zone is selected so the results of the test vary
+    ; depending on when we run it.
     (parameterize ([current-tz "GB"])
-      (check-equal? (string->date "2010-03-28 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 28 03 2010    0))
+      (check-equal? (string->date "2010-03-28 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 28 03 2010    0))
       (check-equal? (string->date "2010-03-28 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 28 03 2010 3600))
-      (check-equal? (string->date "2010-10-31 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 31 10 2010 3600))
+      (check-equal? (string->date "2010-10-31 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 31 10 2010 3600))
       (check-equal? (string->date "2010-10-31 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 31 10 2010    0))
-      (check-equal? (string->date "2011-03-27 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 27 03 2011    0))
+      (check-equal? (string->date "2011-03-27 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 27 03 2011    0))
       (check-equal? (string->date "2011-03-27 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 27 03 2011 3600))
-      (check-equal? (string->date "2011-10-30 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 30 10 2011 3600))
+      (check-equal? (string->date "2011-10-30 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 30 10 2011 3600))
       (check-equal? (string->date "2011-10-30 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 30 10 2011    0)))
+    ; We check an hour before and an hour after each change to make sure the correct time zones are returned.
+    ; If we were to check the hour of the change, our current time zone is selected so the results of the test vary
+    ; depending on when we run it.
     (parameterize ([current-tz "PST8PDT"])
-      (check-equal? (string->date "2010-03-14 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 14 03 2010 -28800))
+      (check-equal? (string->date "2010-03-14 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 14 03 2010 -28800))
       (check-equal? (string->date "2010-03-14 03:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 03 14 03 2010 -25200))
-      (check-equal? (string->date "2010-11-07 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 07 11 2010 -25200))
+      (check-equal? (string->date "2010-11-07 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 07 11 2010 -25200))
       (check-equal? (string->date "2010-11-07 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 07 11 2010 -28800))
-      (check-equal? (string->date "2011-03-13 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 13 03 2011 -28800))
+      (check-equal? (string->date "2011-03-13 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 13 03 2011 -28800))
       (check-equal? (string->date "2011-03-13 03:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 03 13 03 2011 -25200))
-      (check-equal? (string->date "2011-11-06 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 06 11 2011 -25200))
+      (check-equal? (string->date "2011-11-06 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 06 11 2011 -25200))
       (check-equal? (string->date "2011-11-06 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 06 11 2011 -28800))))
   
   (test-case "string->date : omitting day/month/year (see comments for details)"
