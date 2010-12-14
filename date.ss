@@ -179,6 +179,59 @@
         date
         (date->date/tz date offset))))
 
+; Time difference --------------------------------
+
+; Counts the number of day starts (midnights) between a and b.
+; Returns a positive result if a > b, negative if b < a.
+;
+; date date -> integer
+(define (date-days-difference a b)
+  (if (date>=? a b)
+      (+ (for/fold ([accum 0])
+                   ([year  (in-range (date-year b) (date-year a))])
+                   (+ accum (days-in-year year)))
+         (for/fold ([accum 0])
+                   ([month  (in-range 1 (date-month a))])
+                   (+ accum (days-in-month month (date-year a))))
+         (for/fold ([accum 0])
+                   ([month  (in-range 1 (date-month b))])
+                   (- accum (days-in-month month (date-year b))))
+         (- (date-day a)
+            (date-day b)))
+      (- (date-days-difference b a))))
+
+; Counts the number of week starts (Sunday midnights) between a and b.
+; Returns a positive result if a > b, negative if b < a.
+;
+; date date -> integer
+(define (date-weeks-difference a b)
+  (if (date>=? a b)
+      (+ (if (>= (date-week-day a) (date-week-day b)) 0 1)
+         (quotient (date-days-difference a b) 7))
+      (- (date-weeks-difference b a))))
+
+; Counts the number of month starts (midnights on the 1st of the month) between a and b.
+; Returns a positive result if a > b, negative if b < a.
+; 
+; date date -> integer
+(define (date-months-difference a b)
+  (if (date>=? a b)
+      (+ (- (date-month a)
+            (date-month b))
+         (for/fold ([accum 0])
+                   ([year  (in-range (date-year b) (date-year a))])
+                   (+ accum 12)))
+      (- (date-months-difference b a))))
+
+; Counts the number of year starts (midnights on Jan 1st) between a and b.
+; Returns a positive result if a > b, negative if b < a.
+;
+; date date -> integer
+(define (date-years-difference a b)
+  (if (date>=? a b)
+      (- (date-year a) (date-year b))
+      (- (date-years-difference b a))))
+
 ; Helpers ----------------------------------------
 
 ; Returns the number of days counting forward/backward *count* months from the first of *month* in *year*.
@@ -202,37 +255,43 @@
 ; Provides ---------------------------------------
 
 (provide/contract
- [make-date      (->* (integer? integer? integer? integer? integer? integer? integer?) (#:tz zone-exists?) date?)]
- [copy-date      (->* (date?)
-                      (#:nanosecond natural-number/c
-                                    #:second natural-number/c
-                                    #:minute natural-number/c
-                                    #:hour   natural-number/c
-                                    #:day    natural-number/c
-                                    #:month  natural-number/c
-                                    #:year   integer?
-                                    #:tz     string?)
-                      date?)]
- [date->string   (->* (date? string?) (#:tz zone-exists?) string?)]
- [string->date   (->* (string? string?) (#:tz zone-exists?) date?)]
- [time-utc->date (->* (time-utc?) (#:tz zone-exists?) date?)]
- [time-tai->date (->* (time-tai?) (#:tz zone-exists?) date?)]
- [date+seconds   (->* (date? integer?) (#:tz zone-exists?) date?)]
- [date+minutes   (->* (date? integer?) (#:tz zone-exists?) date?)]
- [date+hours     (->* (date? integer?) (#:tz zone-exists?) date?)]
- [date+days      (->* (date? integer?) (#:tz zone-exists?) date?)]
- [date+weeks     (->* (date? integer?) (#:tz zone-exists?) date?)]
- [date+months    (->* (date? integer?) (#:tz zone-exists?) date?)]
- [date+years     (->* (date? integer?) (#:tz zone-exists?) date?)]
- [date+          (->* (date?) (#:seconds natural-number/c
-                                         #:minutes natural-number/c
-                                         #:hours   natural-number/c
-                                         #:days    natural-number/c
-                                         #:weeks   natural-number/c
-                                         #:months  natural-number/c
-                                         #:years   natural-number/c
-                                         #:tz      zone-exists?) date?)]
- [normalize-date (->* (date?) (#:tz zone-exists?) date?)])
+ [make-date              (->* (integer? integer? integer? integer? integer? integer? integer?)
+                              (#:tz zone-exists?)
+                              date?)]
+ [copy-date              (->* (date?)
+                              (#:nanosecond natural-number/c
+                                            #:second natural-number/c
+                                            #:minute natural-number/c
+                                            #:hour   natural-number/c
+                                            #:day    natural-number/c
+                                            #:month  natural-number/c
+                                            #:year   integer?
+                                            #:tz     string?)
+                              date?)]
+ [date->string           (->* (date? string?) (#:tz zone-exists?) string?)]
+ [string->date           (->* (string? string?) (#:tz zone-exists?) date?)]
+ [time-utc->date         (->* (time-utc?) (#:tz zone-exists?) date?)]
+ [time-tai->date         (->* (time-tai?) (#:tz zone-exists?) date?)]
+ [date+seconds           (->* (date? integer?) (#:tz zone-exists?) date?)]
+ [date+minutes           (->* (date? integer?) (#:tz zone-exists?) date?)]
+ [date+hours             (->* (date? integer?) (#:tz zone-exists?) date?)]
+ [date+days              (->* (date? integer?) (#:tz zone-exists?) date?)]
+ [date+weeks             (->* (date? integer?) (#:tz zone-exists?) date?)]
+ [date+months            (->* (date? integer?) (#:tz zone-exists?) date?)]
+ [date+years             (->* (date? integer?) (#:tz zone-exists?) date?)]
+ [date+                  (->* (date?) (#:seconds natural-number/c
+                                                 #:minutes natural-number/c
+                                                 #:hours   natural-number/c
+                                                 #:days    natural-number/c
+                                                 #:weeks   natural-number/c
+                                                 #:months  natural-number/c
+                                                 #:years   natural-number/c
+                                                 #:tz      zone-exists?) date?)]
+ [normalize-date         (->* (date?) (#:tz zone-exists?) date?)]
+ [date-days-difference   (-> date? date? integer?)]
+ [date-weeks-difference  (-> date? date? integer?)]
+ [date-months-difference (-> date? date? integer?)]
+ [date-years-difference  (-> date? date? integer?)])
 
 (provide
  

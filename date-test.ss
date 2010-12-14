@@ -18,6 +18,14 @@
 (define (ts time)
   (and time (date->string (time-utc->date time) "~Y-~m-~d ~H:~M")))
 
+; string -> date
+(define (sd str)
+  (string->date str "~Y-~m-~d ~H:~M"))
+
+; date -> string
+(define (ds str)
+  (date->string str "~Y-~m-~d ~H:~M"))
+
 (define-syntax-rule (with-time-zones expr ...)
   (for ([tz (in-list (list "GB" "PST8PDT"))])
     (parameterize ([current-tz tz])
@@ -127,26 +135,26 @@
     ; If we were to check the hour of the change, our current time zone is selected so the results of the test vary
     ; depending on when we run it.
     (parameterize ([current-tz "GB"])
-      (check-equal? (string->date "2010-03-28 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 28 03 2010    0))
-      (check-equal? (string->date "2010-03-28 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 28 03 2010 3600))
-      (check-equal? (string->date "2010-10-31 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 31 10 2010 3600))
-      (check-equal? (string->date "2010-10-31 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 31 10 2010    0))
-      (check-equal? (string->date "2011-03-27 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 27 03 2011    0))
-      (check-equal? (string->date "2011-03-27 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 27 03 2011 3600))
-      (check-equal? (string->date "2011-10-30 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 30 10 2011 3600))
-      (check-equal? (string->date "2011-10-30 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 30 10 2011    0)))
+      (check-equal? (sd "2010-03-28 00:00") (srfi-make-date 0 00 00 00 28 03 2010    0))
+      (check-equal? (sd "2010-03-28 02:00") (srfi-make-date 0 00 00 02 28 03 2010 3600))
+      (check-equal? (sd "2010-10-31 00:00") (srfi-make-date 0 00 00 00 31 10 2010 3600))
+      (check-equal? (sd "2010-10-31 02:00") (srfi-make-date 0 00 00 02 31 10 2010    0))
+      (check-equal? (sd "2011-03-27 00:00") (srfi-make-date 0 00 00 00 27 03 2011    0))
+      (check-equal? (sd "2011-03-27 02:00") (srfi-make-date 0 00 00 02 27 03 2011 3600))
+      (check-equal? (sd "2011-10-30 00:00") (srfi-make-date 0 00 00 00 30 10 2011 3600))
+      (check-equal? (sd "2011-10-30 02:00") (srfi-make-date 0 00 00 02 30 10 2011    0)))
     ; We check an hour before and an hour after each change to make sure the correct time zones are returned.
     ; If we were to check the hour of the change, our current time zone is selected so the results of the test vary
     ; depending on when we run it.
     (parameterize ([current-tz "PST8PDT"])
-      (check-equal? (string->date "2010-03-14 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 14 03 2010 -28800))
-      (check-equal? (string->date "2010-03-14 03:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 03 14 03 2010 -25200))
-      (check-equal? (string->date "2010-11-07 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 07 11 2010 -25200))
-      (check-equal? (string->date "2010-11-07 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 07 11 2010 -28800))
-      (check-equal? (string->date "2011-03-13 01:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 01 13 03 2011 -28800))
-      (check-equal? (string->date "2011-03-13 03:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 03 13 03 2011 -25200))
-      (check-equal? (string->date "2011-11-06 00:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 00 06 11 2011 -25200))
-      (check-equal? (string->date "2011-11-06 02:00" "~Y-~m-~d ~H:~M") (srfi-make-date 0 00 00 02 06 11 2011 -28800))))
+      (check-equal? (sd "2010-03-14 01:00") (srfi-make-date 0 00 00 01 14 03 2010 -28800))
+      (check-equal? (sd "2010-03-14 03:00") (srfi-make-date 0 00 00 03 14 03 2010 -25200))
+      (check-equal? (sd "2010-11-07 00:00") (srfi-make-date 0 00 00 00 07 11 2010 -25200))
+      (check-equal? (sd "2010-11-07 02:00") (srfi-make-date 0 00 00 02 07 11 2010 -28800))
+      (check-equal? (sd "2011-03-13 01:00") (srfi-make-date 0 00 00 01 13 03 2011 -28800))
+      (check-equal? (sd "2011-03-13 03:00") (srfi-make-date 0 00 00 03 13 03 2011 -25200))
+      (check-equal? (sd "2011-11-06 00:00") (srfi-make-date 0 00 00 00 06 11 2011 -25200))
+      (check-equal? (sd "2011-11-06 02:00") (srfi-make-date 0 00 00 02 06 11 2011 -28800))))
   
   (test-case "string->date : omitting day/month/year (see comments for details)"
     (parameterize ([current-tz "PST8PDT"])
@@ -277,4 +285,72 @@
       (check-equal? (normalize-date (srfi-make-date 0 00 00 09 01 07 2010    0)) (srfi-make-date 0 00 00 10 01 07 2010 3600)))
     (with-time-zone "PST8PDT"
       (check-equal? (normalize-date (srfi-make-date 0 00 00 09 01 01 2010 3600)) (srfi-make-date 0 00 00 00 01 01 2010 -28800))
-      (check-equal? (normalize-date (srfi-make-date 0 00 00 09 01 07 2010    0)) (srfi-make-date 0 00 00 02 01 07 2010 -25200)))))
+      (check-equal? (normalize-date (srfi-make-date 0 00 00 09 01 07 2010    0)) (srfi-make-date 0 00 00 02 01 07 2010 -25200))))
+  
+  (test-case "date-days-difference"
+    (with-time-zone "GB"
+      ; Same time:
+      (check-equal? (date-days-difference (sd "2010-01-01 00:00") (sd "2010-01-01 00:00"))    0)
+      ; Same day:
+      (check-equal? (date-days-difference (sd "2010-01-01 23:59") (sd "2010-01-01 00:00"))    0)
+      (check-equal? (date-days-difference (sd "2010-01-01 00:00") (sd "2010-01-01 23:59"))    0)
+      ; Across midnight:
+      (check-equal? (date-days-difference (sd "2010-01-01 00:00") (sd "2009-12-31 23:59"))    1)
+      (check-equal? (date-days-difference (sd "2009-12-31 23:59") (sd "2010-01-01 00:00"))   -1)
+      ; Over a year apart:
+      (check-equal? (date-days-difference (sd "2011-02-01 00:00") (sd "2010-01-31 23:59"))  366)
+      (check-equal? (date-days-difference (sd "2010-01-31 23:59") (sd "2011-02-01 00:00")) -366)
+      (check-equal? (date-days-difference (sd "2009-02-01 00:00") (sd "2008-01-31 23:59"))  367)
+      (check-equal? (date-days-difference (sd "2008-01-31 23:59") (sd "2009-02-01 00:00")) -367)
+      ; Leap day:
+      (check-equal? (date-days-difference (sd "2008-02-29 00:00") (sd "2008-02-28 00:00"))    1)
+      (check-equal? (date-days-difference (sd "2008-03-01 00:00") (sd "2008-02-28 00:00"))    2)
+      ; Non-leap day:
+      (check-equal? (date-days-difference (sd "2010-02-29 00:00") (sd "2010-02-28 00:00"))    1)
+      (check-equal? (date-days-difference (sd "2010-03-01 00:00") (sd "2010-02-28 00:00"))    1)))
+  
+  (test-case "date-weeks-difference"
+    (with-time-zone "GB"
+      ; Same time:
+      (check-equal? (date-weeks-difference (sd "2010-01-01 00:00") (sd "2010-01-01 00:00"))   0)
+      ; Same day:
+      (check-equal? (date-weeks-difference (sd "2010-01-01 23:59") (sd "2010-01-01 00:00"))   0)
+      (check-equal? (date-weeks-difference (sd "2010-01-01 00:00") (sd "2010-01-01 23:59"))   0)
+      ; Across midnight Monday (not a wek beginning):
+      (check-equal? (date-weeks-difference (sd "2010-01-04 00:00") (sd "2010-01-03 23:59"))   0)
+      (check-equal? (date-weeks-difference (sd "2010-01-03 23:59") (sd "2010-01-04 00:00"))   0)
+      ; Across midnight Sunday
+      (check-equal? (date-weeks-difference (sd "2010-01-03 00:00") (sd "2010-01-02 23:59"))   1)
+      (check-equal? (date-weeks-difference (sd "2010-01-02 23:59") (sd "2010-01-03 00:00"))  -1)
+      ; Same week:
+      (check-equal? (date-weeks-difference (sd "2010-01-03 00:00") (sd "2010-01-09 23:59"))   0)
+      (check-equal? (date-weeks-difference (sd "2010-01-09 23:59") (sd "2010-01-03 00:00"))   0)))
+  
+  (test-case "date-months-difference"
+    (with-time-zone "GB"
+      ; Same time:
+      (check-equal? (date-months-difference (sd "2010-01-01 00:00") (sd "2010-01-01 00:00"))   0)
+      ; Same month:
+      (check-equal? (date-months-difference (sd "2010-01-31 23:59") (sd "2010-01-01 00:00"))   0)
+      (check-equal? (date-months-difference (sd "2010-01-01 00:00") (sd "2010-01-31 23:59"))   0)
+      ; Across month end:
+      (check-equal? (date-months-difference (sd "2010-01-01 00:00") (sd "2009-12-31 23:59"))   1)
+      (check-equal? (date-months-difference (sd "2009-12-31 23:59") (sd "2010-01-01 00:00"))  -1)
+      (check-equal? (date-months-difference (sd "2010-02-01 00:00") (sd "2010-01-31 23:59"))   1)
+      ; Over a year apart:
+      (check-equal? (date-months-difference (sd "2011-02-01 00:00") (sd "2010-01-31 23:59"))  13)
+      (check-equal? (date-months-difference (sd "2010-01-31 23:59") (sd "2011-02-01 00:00")) -13)
+      ; Leap day:
+      (check-equal? (date-months-difference (sd "2008-02-29 00:00") (sd "2008-02-28 00:00"))   0)
+      (check-equal? (date-months-difference (sd "2008-03-01 00:00") (sd "2008-02-28 00:00"))   1)))
+  
+  (test-case "date-years-difference"
+    (with-time-zone "GB"
+      ; Same time:
+      (check-equal? (date-years-difference (sd "2010-01-01 00:00") (sd "2010-01-01 00:00"))  0)
+      ; Same year:
+      (check-equal? (date-years-difference (sd "2010-12-31 23:59") (sd "2010-01-01 00:00"))  0)
+      (check-equal? (date-years-difference (sd "2010-01-01 00:00") (sd "2010-12-31 23:59"))  0)
+      ; Different years:
+      (check-equal? (date-years-difference (sd "2010-01-01 00:00") (sd "2009-12-31 23:59"))  1)
+      (check-equal? (date-years-difference (sd "2009-12-31 23:59") (sd "2010-01-01 00:00")) -1))))
