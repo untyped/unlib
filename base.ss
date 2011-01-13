@@ -7,7 +7,7 @@
          "exn.ss"
          "require.ss")
 
-(define-library-aliases cce-scheme (planet cce/scheme:6)            #:provide)
+(define-library-aliases cce-scheme (planet cce/scheme:7)            #:provide)
 (define-library-aliases date       (planet bzlib/date:1)            #:provide)
 (define-library-aliases date-tz    (planet bzlib/date-tz:1)         #:provide)
 (define-library-aliases namespace  (planet schematics/namespace:1)  #:provide)

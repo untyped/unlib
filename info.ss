@@ -24,7 +24,7 @@
   "foo.ss")
 
 (define categories            '(devtools))
-(define required-core-version "4.0.2.5")
+(define required-core-version "4.2.1")
 (define repositories          '("4.x"))
 
 (define compile-omit-paths
