@@ -2,7 +2,7 @@
 
 (define name    "Unlib")
 (define version "3.x")
-(define url     "http://svn.untyped.com/unlib/")
+(define url     "https://github.com/untyped/unlib/")
 
 (define blurb
   '("A set of utilities developed by Untyped."))
@@ -24,7 +24,7 @@
   "foo.ss")
 
 (define categories            '(devtools))
-(define required-core-version "4.0.2.5")
+(define required-core-version "4.2.2")
 (define repositories          '("4.x"))
 
 (define compile-omit-paths
