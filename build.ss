@@ -7,16 +7,25 @@
 ; Configuration ----------------------------------
 
 ; string
-(define plt-version "4.2.1.5")
+(define plt-version "4.2.2")
 
 ; path
 (define-runtime-path planet-path "planet")
+
+; -> string
+(define (path-environment)
+  (string-join (cons (format "/usr/local/plt-~a/bin" plt-version)
+                     (filter (lambda (dir)
+                               (not (regexp-match #rx"^/usr/local/plt[-0-9.]*/bin$" dir)))
+                             (regexp-split #rx":" (getenv "PATH"))))
+               ":"))
 
 ; Tasks ------------------------------------------
 
 (define (env)
   (putenv "PLTVERSION" plt-version)
-  (putenv "PLTPLANETDIR" (path->string planet-path)))
+  (putenv "PLTPLANETDIR" (path->string planet-path))
+  (putenv "PATH" (path-environment)))
 
 (define (autoplanet)
   (env)
@@ -30,10 +39,12 @@
         (printf #<<ENDSCRIPT
 export PLTVERSION=~a
 export PLTPLANETDIR="~a"
+export PATH="~a"
 
 ENDSCRIPT
                 plt-version
-                (path->string planet-path)))
+                (path->string planet-path)
+                (path-environment)))
       #:exists 'replace)
     (display (path->string path))))
 
